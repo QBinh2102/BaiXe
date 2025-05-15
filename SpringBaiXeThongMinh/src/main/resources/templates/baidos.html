@@ -1,0 +1,50 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Bãi đỗ</title>
+    <th:block th:replace="base :: styles"></th:block>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+
+    <main class="container">
+        <a th:href="@{/baidos/baido}" class="btn btn-success mt-1">Thêm bãi đỗ</a>
+
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Tên</th>
+                    <th>Địa chỉ</th>
+                    <th>Số lượng chỗ</th>
+                    <th>Giá tiền</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                </tr>
+            </thead>
+                        <tbody>
+                 <tr th:each="bd : ${baidos}">
+                     <td>
+                         <img th:src="${bd.anhBai}" width="200"/>
+                     </td>
+                     <td th:text="${bd.ten}"></td>
+                     <td th:text="${bd.diaChi}"></td>
+                     <td th:text="${bd.soLuong}"></td>
+                     <td th:text="${bd.giaTien}"></td>
+                     <td th:text="${bd.trangThai}"></td>
+                     <td>
+<!--                         /baidos/{idBaiDo}/choDo-->
+                         <a th:href="@{'/baidos/'+ ${bd.id} +'/choDo/'}" class="btn btn-info">Xem chi tiết</a>
+                         <a th:href="@{'/baidos/' + ${bd.id}}" class="btn btn-primary">Sửa</a>
+                         <button class="btn btn-danger">&times;</button>
+                     </td>
+                 </tr>
+             </tbody>
+
+        </table>
+    </main>
+
+    <div th:replace="base :: footer"></div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence           http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+  <persistence-unit name="com.bxtm_BaiXeThongMinh_jar_1.0-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>com.bxtm.pojo.Chodoxe</class>
+    <class>com.bxtm.pojo.Thanhtoan</class>
+    <class>com.bxtm.pojo.Baidoxe</class>
+    <class>com.bxtm.pojo.Soden</class>
+    <class>com.bxtm.pojo.Danhgia</class>
+    <class>com.bxtm.pojo.Thongbao</class>
+    <class>com.bxtm.pojo.Xe</class>
+    <class>com.bxtm.pojo.Booking</class>
+    <class>com.bxtm.pojo.Giaca</class>
+    <class>com.bxtm.pojo.Loaixe</class>
+    <class>com.bxtm.pojo.Nguoidung</class>
+    <class>com.bxtm.pojo.Chodo</class>
+    <class>com.bxtm.pojo.Baotri</class>
+    <class>com.bxtm.pojo.Baido</class>
+    <class>com.bxtm.pojo.Hoadon</class>
+    <class>com.bxtm.pojo.Loaingay</class>
+    <class>com.bxtm.pojo.Giatien</class>
+    <class>com.bxtm.pojo.Anhbai</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/baixedb?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
+      <property name="javax.persistence.jdbc.user" value="root"/>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+      <property name="javax.persistence.jdbc.password" value="admin@123"/>
+    </properties>
+  </persistence-unit>
+</persistence>

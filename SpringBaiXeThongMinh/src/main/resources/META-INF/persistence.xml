@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+  <!-- Define Persistence Unit -->
+  <persistence-unit name="my_persistence_unit">
+    <class>com.bxtm.pojo.Danhgia</class>
+    <class>com.bxtm.pojo.Loaingay</class>
+    <class>com.bxtm.pojo.Thongbao</class>
+    <class>com.bxtm.pojo.Soden</class>
+    <class>com.bxtm.pojo.Nguoidung</class>
+    <class>com.bxtm.pojo.Chodo</class>
+    <class>com.bxtm.pojo.Booking</class>
+    <class>com.bxtm.pojo.Giatien</class>
+    <class>com.bxtm.pojo.Baido</class>
+    <class>com.bxtm.pojo.Hoadon</class>
+    <class>com.bxtm.pojo.Anhbai</class>
+    <class>com.bxtm.pojo.Baotri</class>
+  </persistence-unit>
+</persistence>

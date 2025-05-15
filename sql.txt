@@ -1,0 +1,212 @@
+USE baixedb;
+
+-- 2. LoaiNgay
+CREATE TABLE LoaiNgay (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tenLe NVARCHAR(100) NOT NULL,
+    ngayApDung DATE,
+    ngayKetThuc DATE
+);
+
+-- 3. NguoiDung
+CREATE TABLE NguoiDung (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hoTen NVARCHAR(100) NOT NULL,
+    taiKhoan VARCHAR(50) UNIQUE NOT NULL,
+    matKhau VARCHAR(255) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    SDT VARCHAR(15) NOT NULL,
+    cccd VARCHAR(20) UNIQUE NOT NULL,
+    hieuXe NVARCHAR(100) NOT NULL,
+    bienSo VARCHAR(20) NOT NULL,
+    mauXe NVARCHAR(50) NOT NULL,
+    anhXe VARCHAR(255),
+    avatar VARCHAR(255),
+    vaiTro VARCHAR(10) NOT NULL,
+    active BOOLEAN DEFAULT TRUE
+);
+
+-- 5. SoDen
+CREATE TABLE SoDen (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idNguoiDung INT,
+    soLanViPham INT DEFAULT 0,
+    FOREIGN KEY (idNguoiDung) REFERENCES NguoiDung(id)
+);
+
+-- 6. BaiDo
+CREATE TABLE BaiDo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ten NVARCHAR(100) NOT NULL,
+    diaChi NVARCHAR(255) NOT NULL,
+    soLuong INT NOT NULL,
+    tienIch TEXT DEFAULT NULL,
+    trangThai NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE AnhBai (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    idBaiDo INT,
+    anhBai VARCHAR(255),
+    FOREIGN KEY (idBaiDo) REFERENCES BaiDo(id)
+);
+
+-- 7. ChoDo
+CREATE TABLE ChoDo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idBaiDo INT,
+    viTri NVARCHAR(50) NOT NULL,
+    trangThai NVARCHAR(50) NOT NULL,
+    FOREIGN KEY (idBaiDo) REFERENCES BaiDo(id)
+);
+
+-- 8. GiaTien
+CREATE TABLE GiaTien (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idBaiDo INT,
+    idLoaiNgay INT,
+    giaTien DECIMAL(10,2) NOT NULL,
+    thoiGianApDung TIME NOT NULL,
+    thoiGianKetThuc TIME NOT NULL,
+    FOREIGN KEY (idBaiDo) REFERENCES BaiDo(id),
+    FOREIGN KEY (idLoaiNgay) REFERENCES LoaiNgay(id)
+);
+
+-- 9. Booking
+CREATE TABLE Booking (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idChoDo INT,
+    idNguoiDung INT,
+    thanhTien DECIMAL(10,2) NOT NULL,
+    thoiGianDat DATETIME NOT NULL,
+    thoiGianBatDau DATETIME NOT NULL,
+    thoiGianKetThuc DATETIME NOT NULL,
+    trangThai NVARCHAR(50) NOT NULL,
+    FOREIGN KEY (idChoDo) REFERENCES ChoDo(id),
+    FOREIGN KEY (idNguoiDung) REFERENCES NguoiDung(id)
+);
+
+-- 10. HoaDon
+CREATE TABLE HoaDon (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idNguoiDung INT,
+    idBooking INT,
+    phuongThuc NVARCHAR(50) NOT NULL,
+    thoiGianThanhToan DATETIME NOT NULL,
+    trangThai NVARCHAR(50) NOT NULL,
+    FOREIGN KEY (idNguoiDung) REFERENCES NguoiDung(id),
+    FOREIGN KEY (idBooking) REFERENCES Booking(id)
+);
+
+-- 11. ThongBao
+CREATE TABLE ThongBao (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idNguoiDung INT,
+    noiDung TEXT NOT NULL,
+    thoiGianThongBao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idNguoiDung) REFERENCES NguoiDung(id)
+);
+
+-- 12. DanhGia
+CREATE TABLE DanhGia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idNguoiDung INT,
+    idBaiDo INT,
+    rating INT CHECK (rating BETWEEN 1 AND 5) NOT NULL,
+    binhLuan TEXT DEFAULT NULL,
+    thoiGianDanhGia DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idNguoiDung) REFERENCES NguoiDung(id),
+    FOREIGN KEY (idBaiDo) REFERENCES BaiDo(id)
+);
+
+-- 13. BaoTri
+CREATE TABLE BaoTri (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idBaiDo INT,
+    thoiGianBatDau DATETIME NOT NULL,
+    thoiGianKetThuc DATETIME NOT NULL,
+    tinhTrang NVARCHAR(100) NOT NULL,
+    FOREIGN KEY (idBaiDo) REFERENCES BaiDo(id)
+);
+
+USE baixedb;
+
+-- LoaiNgay
+INSERT INTO LoaiNgay (tenLe, ngayApDung, ngayKetThuc) VALUES
+('Ngày thường', null, null),
+('Lễ 30/4', '2025-04-30', '2025-05-01');
+
+-- NguoiDung
+INSERT INTO NguoiDung (hoTen, taiKhoan, matKhau, email, SDT, cccd, hieuXe, bienSo, mauXe, anhXe, avatar, vaiTro, active) VALUES
+('Nguyễn Văn A', 'user1', '123456', 'user1@example.com', '0911111111', '111111111', 'Honda', '59X1-123.45', 'Đỏ', null, null, 'ROLE_USER', TRUE),
+('Trần Thị B', 'user2', '123456', 'user2@example.com', '0922222222', '222222222', 'Toyota', '51H-456.78', 'Trắng', null, null, 'ROLE_USER', TRUE),
+('Admin C', 'admin', '123456', 'admin@example.com', '0933333333', '333333333', 'Mazda', '51A-999.99', 'Đen', null, null, 'ROLE_ADMIN', TRUE);
+
+-- SoDen
+INSERT INTO SoDen (idNguoiDung, soLanViPham) VALUES
+(1, 1), 
+(2, 0);
+
+-- BaiDo
+INSERT INTO BaiDo (ten, diaChi, soLuong, tienIch, trangThai) VALUES
+('Bãi xe A', '1 Lê Lợi, Q1', 3, 'Bảo vệ 24/7, Camera', 'Hoạt động'),
+('Bãi xe B', '20 Trần Hưng Đạo, Q5', 3, 'Wifi miễn phí', 'Hoạt động'),
+('Bãi xe C', '75 Nguyễn Trãi, Q3', 3, 'Có mái che', 'Bảo trì');
+
+-- Dữ liệu cho bảng AnhBai
+INSERT INTO AnhBai (idBaiDo, anhBai) VALUES
+(1, null),
+(2, null),
+(3, null);
+
+-- ChoDo
+INSERT INTO ChoDo (idBaiDo, viTri, trangThai) VALUES
+(1, '1', 'Bình thường'),
+(1, '2', 'Bình thường'),
+(1, '3', 'Bảo trì'),
+(2, '1', 'Bình thường'),
+(2, '2', 'Bảo trì'),
+(2, '3', 'Bình thường'),
+(3, '1', 'Bảo trì'),
+(3, '2', 'Bình thường'),
+(3, '3', 'Bình thường');
+
+INSERT INTO GiaTien (idBaiDo, idLoaiNgay, giaTien, thoiGianApDung, thoiGianKetThuc) VALUES
+(1, 1, 10000, '07:00:00', '18:00:00'),
+(1, 1, 20000, '18:00:00', '07:00:00'),
+(1, 2, 20000, '07:00:00', '18:00:00'),
+(1, 2, 40000, '18:00:00', '07:00:00'),
+(2, 1, 20000, '08:00:00', '18:00:00'),
+(2, 1, 25000, '18:00:00', '08:00:00'),
+(3, 1, 15000, '09:00:00', '17:00:00'),
+(3, 1, 25000, '17:00:00', '09:00:00');
+
+-- Booking
+INSERT INTO Booking (idChoDo, idNguoiDung, thanhTien, thoiGianDat, thoiGianBatDau, thoiGianKetThuc, trangThai) VALUES
+(1, 1, 10000, '2025-05-09 08:00:00', '2025-05-10 07:00:00', '2025-05-10 09:00:00', 'Hoàn thành'),
+(2, 2, 20000, '2025-05-09 09:00:00', '2025-05-10 08:00:00', '2025-05-10 10:00:00', 'Đang đặt'),
+(3, 1, 20000, '2025-05-09 10:00:00', '2025-05-10 09:00:00', '2025-05-10 11:00:00', 'Hủy');
+
+-- HoaDon
+INSERT INTO HoaDon (idNguoiDung, idBooking, phuongThuc, thoiGianThanhToan, trangThai) VALUES
+(1, 1, 'Tiền mặt', '2025-05-10 09:05:00', 'Đã thanh toán'),
+(2, 2, 'Chuyển khoản', '2025-05-10 10:05:00', 'Đã thanh toán'),
+(3, 3, 'Thẻ', '2025-05-10 11:05:00', 'Đã hủy');
+
+-- ThongBao
+INSERT INTO ThongBao (idNguoiDung, noiDung, thoiGianThongBao) VALUES
+(1, 'Bạn đã đặt chỗ thành công.', '2025-05-10 07:00:00'),
+(2, 'Thanh toán thành công.', '2025-05-10 10:00:00'),
+(3, 'Chỗ đỗ đã bị hủy.', '2025-05-10 11:00:00');
+
+-- DanhGia
+INSERT INTO DanhGia (idNguoiDung, idBaiDo, rating, binhLuan, thoiGianDanhGia) VALUES
+(1, 1, 5, 'Rộng rãi, dễ đỗ', '2025-05-10 09:00:00'),
+(2, 2, 4, 'Ổn áp, nhân viên thân thiện', '2025-05-10 09:30:00'),
+(2, 3, 3, 'Đang bảo trì nên hơi bất tiện', '2025-05-10 10:00:00');
+
+-- BaoTri
+INSERT INTO BaoTri (idBaiDo, thoiGianBatDau, thoiGianKetThuc, tinhTrang) VALUES
+(3, '2025-05-08 08:00:00', '2025-05-09 08:00:00', 'Thay mái che'),
+(3, '2025-05-15 09:00:00', '2025-05-15 18:00:00', 'Vệ sinh định kỳ'),
+(3, '2025-06-01 07:00:00', '2025-06-01 17:00:00', 'Bảo trì hệ thống camera');
