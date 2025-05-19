@@ -63,7 +63,7 @@ public class SpringSecurityConfigs {
             .cors(withDefaults())
             .csrf(c -> c.disable())
             .authorizeHttpRequests(requests 
-                -> requests.requestMatchers("/", "/home").authenticated()
+                -> requests.requestMatchers("/", "/home", "/baidos/**").authenticated()
                         .requestMatchers("/js/**").permitAll()
                         .requestMatchers("/api/**").permitAll())
             .formLogin(form -> form.loginPage("/login")

@@ -60,6 +60,10 @@ const Baido = () => {
             setPage(page + 1);
     }
 
+    const xemChiTiet = (idBaiDo) => {
+        nav(`/baidos/${idBaiDo}`);
+    }
+
     return (
         <>
             <h1 style={{textAlign:"center", margin:"20px 0"}}>Danh sách bãi đỗ</h1>
@@ -90,7 +94,7 @@ const Baido = () => {
                             <Card.Body>
                                 <Card.Title>{bd.ten}</Card.Title>
                                 <Card.Text>{bd.giaTien.toLocaleString()} VNĐ</Card.Text>
-                                <Button variant="primary">Xem chi tiết</Button>
+                                <Button onClick={() => xemChiTiet(bd.id)} variant="primary" >Xem chi tiết</Button>
                             </Card.Body>
                         </Card>
                     </Col>)}

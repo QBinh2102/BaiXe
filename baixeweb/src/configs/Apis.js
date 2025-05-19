@@ -5,7 +5,9 @@ const BASE_URL = "http://localhost:8080/SpringBaiXeThongMinh/api";
 
 export const endpoints = {
     'baidos': '/baidos',
+    'baido': (id) => `/baidos/${id}`,
     'chodos': '/chodos',
+    'searchChoDo': (idBaiDo) => `/baidos/${idBaiDo}/search`,
     'baotris': '/baotris',
     'bookings': '/bookings',
     'hoadons': '/hoadons',
