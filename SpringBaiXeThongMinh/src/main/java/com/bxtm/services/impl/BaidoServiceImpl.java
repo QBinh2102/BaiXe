@@ -25,11 +25,12 @@ import org.springframework.stereotype.Service;
  * @author toquocbinh2102
  */
 @Service
-public class BaidoServiceImpl implements BaidoService{
+public class BaidoServiceImpl implements BaidoService {
+
     @Autowired
     private BaidoRepository baiDoRepo;
     @Autowired
-    private ChodoRepository choDoRepo; 
+    private ChodoRepository choDoRepo;
     @Autowired
     private Cloudinary cloudinary;
 
@@ -44,8 +45,8 @@ public class BaidoServiceImpl implements BaidoService{
         baiDo.setFile(null);
         return baiDo;
     }
-    
-   @Override
+
+    @Override
     public Baido createOrUpdate(Baido baiDo) {
         boolean isNew = baiDo.getId() == null;
 
@@ -53,7 +54,11 @@ public class BaidoServiceImpl implements BaidoService{
             baiDo.setTrangThai("Hoạt động");
         }
 
-        if (baiDo.getFile() != null && !baiDo.getFile().isEmpty()) {
+        // Nếu là cập nhật và không có ảnh mới -> giữ nguyên ảnh cũ
+        if (!isNew && (baiDo.getFile() == null || baiDo.getFile().isEmpty())) {
+            Baido old = this.baiDoRepo.getBaiDoById(baiDo.getId());
+            baiDo.setAnhBai(old.getAnhBai());
+        } else if (baiDo.getFile() != null && !baiDo.getFile().isEmpty()) {
             try {
                 Map res = cloudinary.uploader().upload(baiDo.getFile().getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));
@@ -63,19 +68,21 @@ public class BaidoServiceImpl implements BaidoService{
             }
         }
 
-        // Lưu bãi đỗ trước khi tạo chỗ đỗ
+        // Lưu bãi đỗ
         baiDo = this.baiDoRepo.createOrUpdate(baiDo);
 
+        // Nếu thêm mới, tạo chỗ đỗ tương ứng
         if (isNew && baiDo.getSoLuong() > 0) {
             for (int i = 1; i <= baiDo.getSoLuong(); i++) {
                 Chodo chodo = new Chodo();
                 chodo.setViTri(String.valueOf(i));
                 chodo.setTrangThai("Bình thường");
-                chodo.setIdBaiDo(baiDo); 
+                chodo.setIdBaiDo(baiDo);
                 this.choDoRepo.createOrUpdate(chodo);
             }
         }
 
         return baiDo;
     }
+
 }

@@ -7,6 +7,7 @@ import Baido from "./components/Baido";
 import Dangnhap from "./components/Dangnhap";
 import Dangky from "./components/Dangky";
 import ChiTietBaiDo from "./components/ChiTietBaiDo";
+import Capnhatbaido from "./components/Capnhatbaido"
 import { Container } from "react-bootstrap";
 import { MyDispatchContext, MyUserContext } from "./configs/Contexts";
 import { useReducer } from "react";
@@ -27,6 +28,8 @@ const App = () => {
               <Route path="/dangky" element={<Dangky/>}/>
               <Route path="/baidos" element={<Baido/>}/>
               <Route path="/baidos/:idBaiDo" element={<ChiTietBaiDo/>}/>
+              <Route path="/baidos/add" element={<Capnhatbaido/>} />
+              <Route path="/baidos/edit/:id" element={<Capnhatbaido />} />
             </Routes>
           </Container>
 

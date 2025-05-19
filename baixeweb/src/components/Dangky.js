@@ -14,7 +14,7 @@ const Dangky = () => {
         field: "matKhau",
         type: "password"
     }, {
-        label: "Xác nhận mmật khẩu",
+        label: "Xác nhận mật khẩu",
         field: "confirm",
         type: "password"
     }, {

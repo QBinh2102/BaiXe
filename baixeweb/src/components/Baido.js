@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
 import Apis, {endpoints} from "../configs/Apis";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import MySpinner from "./layout/MySpinner";
+import {  MyUserContext } from "../configs/Contexts";
 
 const Baido = () => {
     const [baidos, setBaiDos] = useState([]);
@@ -11,6 +12,7 @@ const Baido = () => {
     const [q] = useSearchParams();
     const [kw, setKw] = useState();
     const nav = useNavigate();
+    const user = useContext(MyUserContext);
 
     const loadBaiDos = async () => {
         try {
@@ -59,14 +61,23 @@ const Baido = () => {
         if (!loading && page > 0)
             setPage(page + 1);
     }
-
-    const xemChiTiet = (idBaiDo) => {
+    
+     const xemChiTiet = (idBaiDo) => {
         nav(`/baidos/${idBaiDo}`);
     }
 
     return (
         <>
             <h1 style={{textAlign:"center", margin:"20px 0"}}>Danh sách bãi đỗ</h1>
+
+            {user?.vaiTro === 'ROLE_ADMIN' && (
+                <div className="text-end mb-3">
+                    <Button variant="success" onClick={() => nav("/baidos/add")}>
+                        Thêm bãi đỗ
+                    </Button>
+                </div>
+            )}
+
             <Form onSubmit={search} className="d-flex justify-content-end">
                 <Row className="align-items-center">
                     <Col xs="auto">
@@ -94,7 +105,15 @@ const Baido = () => {
                             <Card.Body>
                                 <Card.Title>{bd.ten}</Card.Title>
                                 <Card.Text>{bd.giaTien.toLocaleString()} VNĐ</Card.Text>
-                                <Button onClick={() => xemChiTiet(bd.id)} variant="primary" >Xem chi tiết</Button>
+
+                                  <Button onClick={() => xemChiTiet(bd.id)} variant="primary" >Xem chi tiết</Button>
+
+                                {user?.vaiTro === 'ROLE_ADMIN' && (
+                                    <Button variant="warning" onClick={() => nav(`/baidos/edit/${bd.id}`)}>
+                                        Sửa
+                                     </Button>
+
+                                )}
                             </Card.Body>
                         </Card>
                     </Col>)}
