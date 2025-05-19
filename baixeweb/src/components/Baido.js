@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
-import Apis, {endpooints} from "../configs/Apis";
+import Apis, {endpoints} from "../configs/Apis";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import MySpinner from "./layout/MySpinner";
 
@@ -16,7 +16,7 @@ const Baido = () => {
         try {
             setLoading(true);
 
-            let url = `${endpooints['baidos']}?page=${page}`;
+            let url = `${endpoints['baidos']}?page=${page}`;
 
             let tenBaiDo = q.get('tenBai');
             if(tenBaiDo){
@@ -63,14 +63,14 @@ const Baido = () => {
     return (
         <>
             <h1 style={{textAlign:"center", margin:"20px 0"}}>Danh sách bãi đỗ</h1>
-            <Form onSubmit={search} className="d-flex justify-content-end me-3">
+            <Form onSubmit={search} className="d-flex justify-content-end">
                 <Row className="align-items-center">
                     <Col xs="auto">
                     <Form.Control
                         type="search"
                         value ={kw}
                         onChange={e => setKw(e.target.value)}
-                        placeholder="Nhập từ khóa"
+                        placeholder="Tìm tên bãi"
                         className="me-2"
                     />
                     </Col>

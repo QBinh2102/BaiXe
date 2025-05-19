@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -58,15 +59,18 @@ public class SpringSecurityConfigs {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(c -> c.disable()).authorizeHttpRequests(requests 
+        http
+            .cors(withDefaults())
+            .csrf(c -> c.disable())
+            .authorizeHttpRequests(requests 
                 -> requests.requestMatchers("/", "/home").authenticated()
                         .requestMatchers("/js/**").permitAll()
                         .requestMatchers("/api/**").permitAll())
-                .formLogin(form -> form.loginPage("/login")
+            .formLogin(form -> form.loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true").permitAll())
-                .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
+            .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
         
         return http.build();
     }

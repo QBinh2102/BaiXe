@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import Apis, { endpooints } from "../configs/Apis";
+import { Alert, Button, Col, Form, Row } from "react-bootstrap";
+import Apis, { endpoints } from "../configs/Apis";
 import MySpinner from "./layout/MySpinner";
 import { useNavigate } from "react-router-dom";
 
@@ -81,24 +81,14 @@ const Dangky = () => {
 
             try {
                 setLoading(true);
-                let res = await Apis.post(endpooints['dangky'], form, {
+                let res = await Apis.post(endpoints['dangky'], form, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
 
-                if (res.data?.success) {
-                    console.log("1");
-                    nav(`/dangnhap`, { replace: true });
-                    return;
-                }
-
-                // Cách 2: Kiểm tra theo status
-                if ([200, 201].includes(res.status)) {
-                    console.log("2");
-                    nav(`/dangnhap`);
-                    return;
-                }
+                if (res.status === 201)
+                    nav('/login');
             } catch (ex) {
                 console.error(ex);
             } finally{
@@ -110,37 +100,35 @@ const Dangky = () => {
     return (
         <>
             <h1 className="text-center text-success mt-2">Đăng ký người dùng</h1>
-            <Container>
-                {msg && <Alert variant="warning" className="mt-1">{msg}</Alert>}
-                <Form onSubmit={dangKy}>
-                    {info.map(i => <Form.Group className="mb-3">
-                        <Form.Control value={user[i.field]} onChange={e => setUser({...user, [i.field]: e.target.value})} type={i.type} placeholder={i.label} required />
-                    </Form.Group>)}
+            {msg && <Alert variant="warning" className="mt-1">{msg}</Alert>}
+            <Form onSubmit={dangKy}>
+                {info.map(i => <Form.Group className="mb-3">
+                    <Form.Control value={user[i.field]} onChange={e => setUser({...user, [i.field]: e.target.value})} type={i.type} placeholder={i.label} required />
+                </Form.Group>)}
 
-                    <Form.Group as={Row} className="mb-3">
-                        <Form.Label column sm="1">
-                        Ảnh xe
-                        </Form.Label>
-                        <Col sm="11">
-                        <Form.Control ref={anhXe} type="file" required />
-                        </Col>
-                    </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="1">
+                    Ảnh xe
+                    </Form.Label>
+                    <Col sm="11">
+                    <Form.Control ref={anhXe} type="file" required />
+                    </Col>
+                </Form.Group>
 
-                    <Form.Group as={Row} className="mb-3">
-                        <Form.Label column sm="1">
-                        Avatar
-                        </Form.Label>
-                        <Col sm="11">
-                        <Form.Control ref={avatar} type="file" required />
-                        </Col>
-                    </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="1">
+                    Avatar
+                    </Form.Label>
+                    <Col sm="11">
+                    <Form.Control ref={avatar} type="file" required />
+                    </Col>
+                </Form.Group>
 
-                    <Form.Group className="mb-3 text-center">
-                        {loading === true?<MySpinner/>:<Button type="submit" variant="danger" >Đăng ký</Button>}
-                    </Form.Group>
+                <Form.Group className="mb-3 text-center">
+                    {loading === true?<MySpinner/>:<Button type="submit" variant="danger" >Đăng ký</Button>}
+                </Form.Group>
 
-                </Form>
-            </Container>
+            </Form>
         </>
     );
 }

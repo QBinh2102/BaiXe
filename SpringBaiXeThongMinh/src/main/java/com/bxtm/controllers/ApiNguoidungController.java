@@ -30,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
 public class ApiNguoidungController {
     @Autowired
     private NguoidungService nguoiDungService;
@@ -82,6 +81,7 @@ public class ApiNguoidungController {
     }
     
     @PostMapping("/login")
+    @CrossOrigin
     public ResponseEntity<?> login(@RequestBody Nguoidung nguoiDung) {
 
         if (this.nguoiDungService.authenticate(nguoiDung.getTaiKhoan(), nguoiDung.getMatKhau())) {
@@ -97,6 +97,7 @@ public class ApiNguoidungController {
 
     @RequestMapping("/secure/profile")
     @ResponseBody
+    @CrossOrigin
     public ResponseEntity<Nguoidung> getProfile(Principal principal) {
         return new ResponseEntity<>(this.nguoiDungService.getNguoiDungByTaiKhoan(principal.getName()), HttpStatus.OK);
     }

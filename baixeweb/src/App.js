@@ -6,21 +6,32 @@ import Trangchu from "./components/Trangchu";
 import Baido from "./components/Baido";
 import Dangnhap from "./components/Dangnhap";
 import Dangky from "./components/Dangky";
+import { Container } from "react-bootstrap";
+import { MyDispatchContext, MyUserContext } from "./configs/Contexts";
+import { useReducer } from "react";
+import MyUserReducer from "./reducers/MyUserReducer";
 
 const App = () => {
+  const [user, dispatch] = useReducer(MyUserReducer, null);
   return (
-    <BrowserRouter>
-      <Header />
+    <MyUserContext.Provider value={user}>
+      <MyDispatchContext.Provider value={dispatch}>
+        <BrowserRouter>
+          <Header />
 
-        <Routes>
-          <Route path="/" element={<Trangchu/>}/>
-          <Route path="/dangnhap" element={<Dangnhap/>}/>
-          <Route path="/dangky" element={<Dangky/>}/>
-          <Route path="/baidos" element={<Baido/>}/>
-        </Routes>
+          <Container>
+            <Routes>
+              <Route path="/" element={<Trangchu/>}/>
+              <Route path="/dangnhap" element={<Dangnhap/>}/>
+              <Route path="/dangky" element={<Dangky/>}/>
+              <Route path="/baidos" element={<Baido/>}/>
+            </Routes>
+          </Container>
 
-      <Footer />
-    </BrowserRouter>
+          <Footer />
+        </BrowserRouter>
+      </MyDispatchContext.Provider>
+    </MyUserContext.Provider>
   );
 }
 
