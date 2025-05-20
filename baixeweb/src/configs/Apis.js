@@ -14,6 +14,10 @@ export const endpoints = {
     'dangky': '/nguoidungs',
     'dangnhap': '/login',
     'current-user': '/secure/profile',
+    'capnhat': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhat`,
+    'capnhatanhxe': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatanhxe`,
+    'capnhatavatar': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatavatar`,
+    'capnhatkhonganh': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatkhonganh`,
 }
 
 export const authApis = () => {

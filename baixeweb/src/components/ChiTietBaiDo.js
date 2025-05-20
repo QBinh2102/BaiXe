@@ -43,7 +43,7 @@ const ChiTietBaiDo = () => {
             console.info(baiDo.id);
             console.info(startTimeFormatted);
             console.info(endTimeFormatted);
-            let res = await Apis.get(`http://localhost:8080/SpringBaiXeThongMinh/api/baidos/${idBaiDo}/search`, { params });
+            let res = await Apis.get(endpoints['searchChoDo'](baiDo.id), { params });
             
             setChoDo(res.data);
 

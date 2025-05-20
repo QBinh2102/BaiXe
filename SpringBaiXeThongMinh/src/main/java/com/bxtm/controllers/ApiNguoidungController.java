@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class ApiNguoidungController {
     @Autowired
     private NguoidungService nguoiDungService;
@@ -58,11 +61,12 @@ public class ApiNguoidungController {
         return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(newNguoiDung), HttpStatus.CREATED);
     }
     
-    @PutMapping("/admin/nguoidungs/{idNguoiDung}")
-    public ResponseEntity<Nguoidung> updateNguoiDung(@RequestParam Map<String,String> params,
+    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhat")
+    public ResponseEntity<Nguoidung> updateNguoiDung(@PathVariable(value="idNguoiDung") int id,
+            @RequestParam Map<String,String> params,
             @RequestParam("avatar") MultipartFile avatar,
             @RequestParam("anhXe") MultipartFile anhXe){
-        Nguoidung nguoiDung = new Nguoidung();
+        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
         nguoiDung.setHoTen(params.get("hoTen"));
         nguoiDung.setTaiKhoan(params.get("taiKhoan"));
         nguoiDung.setMatKhau(params.get("matKhau"));
@@ -74,14 +78,66 @@ public class ApiNguoidungController {
         nguoiDung.setMauXe(params.get("mauXe"));
         nguoiDung.setFileAnhXe(anhXe);
         nguoiDung.setFile(avatar);
-        nguoiDung.setVaiTro("ROLE_USER");
-        nguoiDung.setActive(Boolean.TRUE);
+        
+        return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
+    }
+    
+    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatanhxe")
+    public ResponseEntity<Nguoidung> updateNguoiDungAnhXe(@PathVariable(value="idNguoiDung") int id,
+            @RequestParam Map<String,String> params,
+            @RequestParam("anhXe") MultipartFile anhXe){
+        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
+        nguoiDung.setHoTen(params.get("hoTen"));
+        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
+        nguoiDung.setMatKhau(params.get("matKhau"));
+        nguoiDung.setEmail(params.get("email"));
+        nguoiDung.setSdt(params.get("sdt"));
+        nguoiDung.setCccd(params.get("cccd"));
+        nguoiDung.setHieuXe(params.get("hieuXe"));
+        nguoiDung.setBienSo(params.get("bienSo"));
+        nguoiDung.setMauXe(params.get("mauXe"));
+        nguoiDung.setFileAnhXe(anhXe);
+        
+        return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
+    }
+    
+    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatavatar")
+    public ResponseEntity<Nguoidung> updateNguoiDungAvatar(@PathVariable(value="idNguoiDung") int id,
+            @RequestParam Map<String,String> params,
+            @RequestParam("avatar") MultipartFile avatar){
+        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
+        nguoiDung.setHoTen(params.get("hoTen"));
+        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
+        nguoiDung.setMatKhau(params.get("matKhau"));
+        nguoiDung.setEmail(params.get("email"));
+        nguoiDung.setSdt(params.get("sdt"));
+        nguoiDung.setCccd(params.get("cccd"));
+        nguoiDung.setHieuXe(params.get("hieuXe"));
+        nguoiDung.setBienSo(params.get("bienSo"));
+        nguoiDung.setMauXe(params.get("mauXe"));
+        nguoiDung.setFile(avatar);
+        
+        return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
+    }
+    
+    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatkhonganh")
+    public ResponseEntity<Nguoidung> updateNguoiDungKhongAnh(@PathVariable(value="idNguoiDung") int id,
+            @RequestParam Map<String,String> params){
+        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
+        nguoiDung.setHoTen(params.get("hoTen"));
+        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
+        nguoiDung.setMatKhau(params.get("matKhau"));
+        nguoiDung.setEmail(params.get("email"));
+        nguoiDung.setSdt(params.get("sdt"));
+        nguoiDung.setCccd(params.get("cccd"));
+        nguoiDung.setHieuXe(params.get("hieuXe"));
+        nguoiDung.setBienSo(params.get("bienSo"));
+        nguoiDung.setMauXe(params.get("mauXe"));
         
         return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
     }
     
     @PostMapping("/login")
-    @CrossOrigin
     public ResponseEntity<?> login(@RequestBody Nguoidung nguoiDung) {
 
         if (this.nguoiDungService.authenticate(nguoiDung.getTaiKhoan(), nguoiDung.getMatKhau())) {
@@ -97,7 +153,6 @@ public class ApiNguoidungController {
 
     @RequestMapping("/secure/profile")
     @ResponseBody
-    @CrossOrigin
     public ResponseEntity<Nguoidung> getProfile(Principal principal) {
         return new ResponseEntity<>(this.nguoiDungService.getNguoiDungByTaiKhoan(principal.getName()), HttpStatus.OK);
     }

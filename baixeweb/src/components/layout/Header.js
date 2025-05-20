@@ -21,7 +21,7 @@ const Header = () => {
                         <Link to="/dangnhap" className="nav-link text-success">Đăng nhập</Link>
                         <Link to="/dangky" className="nav-link text-danger">Đăng ký</Link>
                     </>:<>
-                        <Link to='/dangky' className="nav-link text-success">
+                        <Link to='/thongtin' className="nav-link text-success">
                             <Image src={user.avatar} className="rounded" width="40"/>
                             Chào {user.taiKhoan}
                         </Link>

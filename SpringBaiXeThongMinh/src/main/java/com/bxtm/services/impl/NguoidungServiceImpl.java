@@ -70,7 +70,7 @@ public class NguoidungServiceImpl implements NguoidungService{
     @Override
     public Nguoidung createOrUpdate(Nguoidung nguoiDung) {
         nguoiDung.setMatKhau(this.passwordEncoder.encode(nguoiDung.getMatKhau()));
-        if(!nguoiDung.getFile().isEmpty()){
+        if(nguoiDung.getFile() != null && !nguoiDung.getFile().isEmpty()){
             try {
                 Map res = cloudinary.uploader().upload(nguoiDung.getFile().getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));
@@ -79,7 +79,7 @@ public class NguoidungServiceImpl implements NguoidungService{
                 Logger.getLogger(NguoidungServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        if(!nguoiDung.getFileAnhXe().isEmpty()){
+        if(nguoiDung.getFileAnhXe() != null && !nguoiDung.getFileAnhXe().isEmpty()){
             try {
                 Map res = cloudinary.uploader().upload(nguoiDung.getFileAnhXe().getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));
