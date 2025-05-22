@@ -55,7 +55,7 @@ public class BaidoServiceImpl implements BaidoService {
         }
 
         // Nếu là cập nhật và không có ảnh mới -> giữ nguyên ảnh cũ
-        if (!isNew && (baiDo.getFile() == null || baiDo.getFile().isEmpty())) {
+        if (!isNew && baiDo.getId() != null && (baiDo.getFile() == null || baiDo.getFile().isEmpty())) {
             Baido old = this.baiDoRepo.getBaiDoById(baiDo.getId());
             baiDo.setAnhBai(old.getAnhBai());
         } else if (baiDo.getFile() != null && !baiDo.getFile().isEmpty()) {

@@ -46,8 +46,6 @@ public class ApiBaidoController {
         return new ResponseEntity<>(this.baiDoService.getBaiDoById(id), HttpStatus.OK);
     }
 
-
-
     @PostMapping(path = "/baidos",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,44 +62,44 @@ public class ApiBaidoController {
 
         return new ResponseEntity<>(this.baiDoService.createOrUpdate(baiDo), HttpStatus.CREATED);
     }
-    
+
     @PutMapping(path = "/baidos/edit/{id}",
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
-public ResponseEntity<?> updateBaiDo(
-        @PathVariable("id") int id,
-        @RequestParam Map<String, String> params,
-        @RequestParam(value = "anhBai", required = false) MultipartFile anhBai) {
-    try {
-        System.out.println("===== BẮT ĐẦU UPDATE BÃI ĐỖ =====");
-        System.out.println("ID: " + id);
-        System.out.println("Params: " + params);
-        if (anhBai != null && !anhBai.isEmpty()) {
-            System.out.println("Tên file ảnh: " + anhBai.getOriginalFilename());
-        } else {
-            System.out.println("Không có ảnh mới");
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateBaiDo(
+            @PathVariable("id") int id,
+            @RequestParam Map<String, String> params,
+            @RequestParam(value = "anhBai", required = false) MultipartFile anhBai) {
+        try {
+            Baido baiDo = this.baiDoService.getBaiDoById(id);
+
+            // Kiểm tra null tránh lỗi
+            String ten = params.get("ten");
+            String diaChi = params.get("diaChi");
+            String soLuongStr = params.get("soLuong");
+            String giaTienStr = params.get("giaTien");
+            String tienIch = params.get("tienIch");
+
+            if (ten == null || diaChi == null || soLuongStr == null || giaTienStr == null) {
+                return new ResponseEntity<>("Thiếu thông tin bắt buộc", HttpStatus.BAD_REQUEST);
+            }
+
+            baiDo.setTen(ten);
+            baiDo.setDiaChi(diaChi);
+            baiDo.setSoLuong(Integer.parseInt(soLuongStr));
+            baiDo.setGiaTien(new BigDecimal(giaTienStr));
+            baiDo.setTienIch(tienIch);
+
+            if (anhBai != null && !anhBai.isEmpty()) {
+                baiDo.setFile(anhBai);
+            }
+
+            Baido updated = this.baiDoService.createOrUpdate(baiDo);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Đã xảy ra lỗi khi cập nhật!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        Baido baiDo = new Baido();
-        baiDo.setId(id);
-        baiDo.setTen(params.get("ten"));
-        baiDo.setDiaChi(params.get("diaChi"));
-        baiDo.setGiaTien(new BigDecimal(params.get("giaTien")));
-        baiDo.setSoLuong(Integer.parseInt(params.get("soLuong")));
-        baiDo.setTienIch(params.get("tienIch"));
-
-        if (anhBai != null && !anhBai.isEmpty()) {
-            baiDo.setFile(anhBai);
-        }
-
-        Baido updated = this.baiDoService.createOrUpdate(baiDo);
-        System.out.println("===== CẬP NHẬT THÀNH CÔNG =====");
-        return new ResponseEntity<>(updated, HttpStatus.OK);
-    } catch (Exception e) {
-        System.err.println("===== LỖI KHI UPDATE BÃI ĐỖ =====");
-        e.printStackTrace();  // In ra lỗi chi tiết
-        return new ResponseEntity<>("Đã xảy ra lỗi khi cập nhật!", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-}
-    
+
 }

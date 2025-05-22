@@ -91,6 +91,7 @@ public class Baido implements Serializable {
     @JsonIgnore
     private Set<Baotri> baotriSet;
     @Transient
+    @JsonIgnore
     private MultipartFile file;
 
     public Baido() {

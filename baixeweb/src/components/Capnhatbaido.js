@@ -16,7 +16,7 @@ const Capnhatbaido = () => {
 
   const anhBai = useRef();
   const [baiDo, setBaiDo] = useState({});
-  const [preview, setPreview] = useState(); // để preview ảnh mới hoặc ảnh cũ
+  const [preview, setPreview] = useState();
   const user = useContext(MyUserContext);
   const [msg, setMsg] = useState();
   const [loading, setLoading] = useState(false);
@@ -29,13 +29,10 @@ const Capnhatbaido = () => {
         setLoading(true);
         let res = await Apis.get(`${endpoints["baidos"]}/${id}`);
         let data = res.data;
-
         setBaiDo(data);
         setPreview(data.anhBai);
-        // console.log("Ảnh từ API:", data.anhBai);
-        // console.log("Ảnh từ API:", data.ten);
       } catch (ex) {
-        console.error(ex);
+        console.error("Lỗi khi tải bãi đỗ:", ex);
       } finally {
         setLoading(false);
       }
@@ -65,16 +62,23 @@ const Capnhatbaido = () => {
 
     let form = new FormData();
     for (let key in baiDo) {
-      if (key !== "anhBai") form.append(key, baiDo[key]);
+      if (key !== "anhBai") {
+        form.append(key, baiDo[key]);
+      }
     }
 
     if (anhBai.current?.files[0]) {
       form.append("anhBai", anhBai.current.files[0]);
     }
 
+    // ✅ In dữ liệu form trước khi gửi
+    console.log("=== FormData chuẩn bị gửi ===");
+    for (let pair of form.entries()) {
+      console.log(pair[0] + ": ", pair[1]);
+    }
+
     try {
       setLoading(true);
-
       let res;
       if (id) {
         res = await Apis.put(`${endpoints["baidos"]}/edit/${id}`, form, {
@@ -87,10 +91,10 @@ const Capnhatbaido = () => {
       }
 
       if (res.status >= 200 && res.status < 300) {
-          nav("/baidos");
+        nav("/baidos");
       }
     } catch (ex) {
-      console.error(ex);
+      console.error("Lỗi khi gửi dữ liệu:", ex);
       setMsg("Đã có lỗi xảy ra!");
     } finally {
       setLoading(false);
