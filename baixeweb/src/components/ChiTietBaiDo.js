@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Apis, { endpoints } from "../configs/Apis";
-import { Badge, Button, Card, Col, Image, ListGroup, Row } from "react-bootstrap";
+import { Badge, Button, Card, Col, Image, ListGroup, Row, Table, Modal, Form } from "react-bootstrap";
 import { CarFront, CheckCircle, CurrencyDollar, GeoAlt } from "react-bootstrap-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import MySpinner from "./layout/MySpinner";
+import { MyUserContext } from "../configs/Contexts";
 
 const ChiTietBaiDo = () => {
     const {idBaiDo} = useParams();
@@ -14,7 +15,19 @@ const ChiTietBaiDo = () => {
     const [startTime, setStartTime] = useState(new Date());
     const [endTime, setEndTime] = useState(new Date());
     const [choDos, setChoDo] = useState([]);
+    const current_user = useContext(MyUserContext);
     const nav = useNavigate();
+    const [showDatChoModal, setShowDatChoModal] = useState(false);
+    const [currentChoDo, setCurrentChoDo] = useState(null);
+
+    const handleOpenDatChoModal = (choDo) => {
+        setCurrentChoDo(choDo);
+        setShowDatChoModal(true);
+    };
+
+    const handleCloseDatChoModal = () => {
+        setShowDatChoModal(false);
+    };
 
     const LoadThongTin = async () => {
         try {
@@ -60,7 +73,58 @@ const ChiTietBaiDo = () => {
     },[])
 
     const timChoDo = () => {
+        if (endTime <= startTime) {
+            alert("Thời gian kết thúc phải lớn hơn thời gian bắt đầu");
+            return;
+        }
         LoadChoDo();
+    }
+
+    const tinhThanhTien = () => {
+        const diffTime = endTime.getTime() - startTime.getTime();
+        const diffHour = Math.ceil(diffTime / (1000 * 60 * 60));
+        return diffHour * baiDo.giaTien;
+    }
+
+    function formatDateToCustomString(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        const yyyy = date.getFullYear();
+        const mm = pad(date.getMonth() + 1);
+        const dd = pad(date.getDate());
+        const hh = pad(date.getHours());
+        const mi = pad(date.getMinutes());
+        const ss = pad(date.getSeconds());
+        return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+    }
+
+    const themBooking = async (idChoDo) => {
+        try {
+            setLoading(true);
+            const now = new Date();
+            let form = new FormData();
+            form.append('idBaiDo', baiDo.id);
+            form.append('idChoDo', idChoDo);
+            form.append('idNguoiDung', current_user.id);
+            form.append('thanhTien', tinhThanhTien());
+            form.append('thoiGianDat', formatDateToCustomString(now));
+            form.append('thoiGianBatDau', formatDateToCustomString(startTime));
+            form.append('thoiGianKetThuc', formatDateToCustomString(endTime));
+
+            for (let pair of form.entries()) {
+                console.info(`${pair[0]}:`, pair[1]);
+            }
+
+            let res = await Apis.post(endpoints['bookings'], form, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+
+        } catch (ex) {
+            console.error(ex);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -158,17 +222,89 @@ const ChiTietBaiDo = () => {
             </div>
             {/* Hiển thị danh sách các chỗ đỗ tìm được */}
             {choDos.length > 0 && (
-                <Row className="mt-4">
-                    <Col>
-                        <h4 className="text-primary">Chỗ đỗ khả dụng</h4>
-                        <ListGroup>
+                <div className="mt-4">
+                    <h4 className="text-primary mb-3">Chỗ đỗ khả dụng</h4>
+                    <Table bordered hover>
+                        <thead>
+                            <tr>
+                                <th className="text-center w-50">Vị trí</th>
+                                <th className="text-center w-50">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             {choDos.map(choDo => (
-                                <ListGroup.Item key={choDo.id}>{choDo.viTri}</ListGroup.Item>
+                                <tr key={choDo.id}>
+                                    <td className="text-center align-middle">{choDo.viTri}</td>
+                                    <td className="text-center">
+                                        {current_user && <Button variant="primary" size="sm" onClick={() => handleOpenDatChoModal(choDo)}>
+                                            Đặt chỗ
+                                        </Button>}
+                                        
+                                    </td>
+                                </tr>
                             ))}
-                        </ListGroup>
-                    </Col>
-                </Row>
+                        </tbody>
+                    </Table>
+                </div>
             )}
+
+            <Modal show={showDatChoModal} onHide={handleCloseDatChoModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Đặt chỗ {currentChoDo?.viTri}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Họ tên</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={current_user.hoTen}
+                                readOnly
+                            />
+                        </Form.Group>
+                        
+                        <Form.Group className="mb-3">
+                            <Form.Label>Số điện thoại</Form.Label>
+                            <Form.Control
+                                type="tel"
+                                value={current_user.sdt}
+                                readOnly
+                            />
+                        </Form.Group>
+                        
+                        <Form.Group className="mb-3">
+                            <Form.Label>Biển số xe</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={current_user.bienSo}
+                                readOnly
+                            />
+                        </Form.Group>
+                        
+                        <div className="mb-3">
+                            <strong>Thời gian:</strong>
+                            <div>
+                                Từ: {startTime.toLocaleString('vi-VN')} - 
+                                Đến: {endTime.toLocaleString('vi-VN')}
+                            </div>
+                        </div>
+                        <div className="mb-3">
+                            <strong>Thành tiền:</strong>
+                            <div className="text-success fw-bold">
+                                {tinhThanhTien().toLocaleString('vi-VN')} VNĐ
+                            </div>
+                        </div>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseDatChoModal}>
+                        Hủy
+                    </Button>
+                    <Button variant="primary" onClick={() => themBooking(currentChoDo.id)}>
+                        Xác nhận đặt chỗ
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 }

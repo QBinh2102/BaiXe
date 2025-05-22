@@ -90,9 +90,9 @@ const Dangky = () => {
                 form.append('anhXe', anhXe.current.files[0]);
             }
 
-            for (let pair of form.entries()) {
-                console.info(`${pair[0]}:`, pair[1]);
-            }
+            // for (let pair of form.entries()) {
+            //     console.info(`${pair[0]}:`, pair[1]);
+            // }
 
             if(current_user===null) {
                 try {

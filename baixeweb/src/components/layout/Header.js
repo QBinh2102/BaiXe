@@ -15,12 +15,12 @@ const Header = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="me-auto">
                     <Link to="/" className="nav-link">Trang chủ</Link>
-                    <Link to="/baidos" className="nav-link">Bãi xe</Link>
-
+                    
                     {user === null ? <>
                         <Link to="/dangnhap" className="nav-link text-success">Đăng nhập</Link>
                         <Link to="/dangky" className="nav-link text-danger">Đăng ký</Link>
                     </>:<>
+                        <Link to="/baidos" className="nav-link">Bãi xe</Link>
                         <Link to='/thongtin' className="nav-link text-success">
                             <Image src={user.avatar} className="rounded" width="40"/>
                             Chào {user.taiKhoan}

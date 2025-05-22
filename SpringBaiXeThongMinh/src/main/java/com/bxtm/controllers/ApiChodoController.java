@@ -46,6 +46,7 @@ public class ApiChodoController {
 
         Map<String, String> params = new HashMap<>();
         params.put("idBaiDo", String.valueOf(id));
+        params.put("trangThai", "Bình thường");
         
         System.out.println("startTime nhận được: " + startTime);
         System.out.println("endTime nhận được: " + endTime);
