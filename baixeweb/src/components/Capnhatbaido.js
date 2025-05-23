@@ -116,53 +116,74 @@ const Capnhatbaido = () => {
       </h1>
       {msg && <Alert variant="warning">{msg}</Alert>}
 
-      <Form onSubmit={handleSubmit} encType="multipart/form-data">
-        {info.map((i) => (
-          <Form.Group className="mb-3" key={i.field}>
+    <Form onSubmit={handleSubmit} encType="multipart/form-data">
+      {info.map((i) => (
+        <Form.Group as={Row} className="mb-3" key={i.field} controlId={`input-${i.field}`}>
+          <Form.Label column sm="2" className="text-end">
+            {i.label}
+          </Form.Label>
+          <Col sm="10">
             <Form.Control
               type={i.type}
               placeholder={i.label}
               required={i.required !== false}
               value={baiDo[i.field] || ""}
-              onChange={(e) => setBaiDo({ ...baiDo, [i.field]: e.target.value })}
-            />
-          </Form.Group>
-        ))}
-
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm="2">
-            Ảnh bãi đỗ
-          </Form.Label>
-          <Col sm="10">
-            {preview && (
-              <div className="mb-2">
-                <img
-                  src={preview}
-                  alt="Ảnh bãi đỗ"
-                  className="img-thumbnail"
-                  style={{ maxWidth: "300px", maxHeight: "200px" }}
-                />
-              </div>
-            )}
-            <Form.Control
-              ref={anhBai}
-              type="file"
-              onChange={handleFileChange}
-              {...(!id && { required: true })}
+              onChange={(e) => {
+                // Không cho phép thay đổi số lượng (soLuong)
+                if (i.field === "soLuong") return;
+                setBaiDo({ ...baiDo, [i.field]: e.target.value });
+              }}
+              // hoặc dùng readonly/disabled cho soLuong
+              {...(i.field === "soLuong" ? { readOnly: true } : {})}
             />
           </Col>
         </Form.Group>
+      ))}
 
-        <Form.Group className="mb-3 text-center">
-          {loading ? (
-            <MySpinner />
-          ) : (
-            <Button variant="success" type="submit">
+      <Form.Group as={Row} className="mb-3" controlId="input-anhBai">
+        <Form.Label column sm="2" className="text-end">
+          Ảnh bãi đỗ
+        </Form.Label>
+        <Col sm="10">
+          {preview && (
+            <div className="mb-2">
+              <img
+                src={preview}
+                alt="Ảnh bãi đỗ"
+                className="img-thumbnail"
+                style={{ maxWidth: "300px", maxHeight: "200px" }}
+              />
+            </div>
+          )}
+          <Form.Control
+            ref={anhBai}
+            type="file"
+            onChange={handleFileChange}
+            {...(!id && { required: true })}
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group className="mb-3 text-center">
+        {loading ? (
+          <MySpinner />
+        ) : (
+          <>
+            <Button variant="success" type="submit" className="me-2">
               {id ? "Cập nhật" : "Thêm mới"}
             </Button>
-          )}
-        </Form.Group>
-      </Form>
+            {id && (
+              <Button variant="primary" onClick={() => nav(`/baidos/chodos/${id}`)}>
+                Sửa chỗ đỗ
+              </Button>
+            )}
+          </>
+        )}
+      </Form.Group>
+    </Form>
+
+
+
     </>
   );
 };

@@ -17,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,29 +31,57 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class ApiChodoController {
+
     @Autowired
     private ChodoService choDoService;
-    
+
     @GetMapping("/baidos/{idBaiDo}/chodos")
-    public ResponseEntity<List<Chodo>> getChoDoByBaiDo(@PathVariable(value="idBaiDo") int id){
-        Map<String,String> params = new HashMap<>();
+    public ResponseEntity<List<Chodo>> getChoDoByBaiDo(@PathVariable(value = "idBaiDo") int id) {
+        Map<String, String> params = new HashMap<>();
         params.put("idBaiDo", String.valueOf(id));
         return new ResponseEntity<>(this.choDoService.getChoDo(params), HttpStatus.OK);
     }
-    
+
     @GetMapping("/baidos/{idBaiDo}/search")
     @CrossOrigin
-    public ResponseEntity<List<Chodo>> getChoDo(@PathVariable(value="idBaiDo") int id,
+    public ResponseEntity<List<Chodo>> getChoDo(@PathVariable(value = "idBaiDo") int id,
             @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         Map<String, String> params = new HashMap<>();
         params.put("idBaiDo", String.valueOf(id));
         params.put("trangThai", "Bình thường");
-        
+
         System.out.println("startTime nhận được: " + startTime);
         System.out.println("endTime nhận được: " + endTime);
 
         return new ResponseEntity<>(this.choDoService.getChoDoTrong(params, startTime, endTime), HttpStatus.OK);
+    }
+
+    @GetMapping("/chodos")
+    @CrossOrigin
+    public ResponseEntity<List<Chodo>> getChoDosByBaiDo(@RequestParam("baiDoId") int baiDoId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("idBaiDo", String.valueOf(baiDoId));
+        List<Chodo> list = this.choDoService.getChoDo(params);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @PutMapping("/chodos/update/{baiDoId}")
+    @CrossOrigin
+    public ResponseEntity<?> updateChodos(
+            @PathVariable("baiDoId") int baiDoId,
+            @RequestBody List<Chodo> chodos) {
+
+        for (Chodo c : chodos) {
+            Chodo existing = this.choDoService.getChoDoById(c.getId());
+            if (existing != null) {
+                existing.setViTri(c.getViTri());
+                existing.setTrangThai(c.getTrangThai());
+                this.choDoService.createOrUpdate(existing);
+            }
+        }
+
+        return new ResponseEntity<>("Cập nhật chỗ đỗ thành công", HttpStatus.OK);
     }
 }
