@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class BaidoRepositoryImpl implements BaidoRepository {
-    
+
     private static final int PAGE_SIZE = 6;
 
     @Autowired
@@ -47,8 +47,19 @@ public class BaidoRepositoryImpl implements BaidoRepository {
             List<Predicate> predicates = new ArrayList<>();
 
             String ten = params.get("tenBai");
-            if (ten != null && !ten.isEmpty()) {
+            String diaChi = params.get("diaChi");
+
+            if (ten != null && !ten.isEmpty() && diaChi != null && !diaChi.isEmpty()) {
+                predicates.add(
+                        cb.and(
+                                cb.like(root.get("ten"), String.format("%%%s%%", ten)),
+                                cb.like(root.get("diaChi"), String.format("%%%s%%", diaChi))
+                        )
+                );
+            } else if (ten != null && !ten.isEmpty()) {
                 predicates.add(cb.like(root.get("ten").as(String.class), String.format("%%%s%%", ten)));
+            } else if (diaChi != null && !diaChi.isEmpty()) {
+                predicates.add(cb.like(root.get("diaChi").as(String.class), String.format("%%%s%%", diaChi)));
             }
 
             String trangThai = params.get("trangThai");
@@ -56,16 +67,11 @@ public class BaidoRepositoryImpl implements BaidoRepository {
                 predicates.add(cb.equal(root.get("trangThai").as(String.class), trangThai));
             }
 
-            String viTri = params.get("viTri");
-            if (viTri != null && !viTri.isEmpty()) {
-                predicates.add(cb.like(root.get("diaChi").as(String.class), String.format("%%%s%%", viTri)));
-            }
-
             q.where(predicates.toArray(Predicate[]::new));
         }
 
         Query query = s.createQuery(q);
-        
+
         if (params != null && params.containsKey("page")) {
             int page = Integer.parseInt(params.getOrDefault("page", "1"));
             int start = (page - 1) * PAGE_SIZE;

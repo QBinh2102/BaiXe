@@ -14,6 +14,33 @@ const Baido = () => {
     const nav = useNavigate();
     const user = useContext(MyUserContext);
 
+    const [districts, setDistricts] = useState([
+        { id: "Q1", name: "Quận 1" },
+        { id: "Q2", name: "Quận 2" },
+        { id: "Q3", name: "Quận 3" },
+        { id: "Q4", name: "Quận 4" },
+        { id: "Q5", name: "Quận 5" },
+        { id: "Q6", name: "Quận 6" },
+        { id: "Q7", name: "Quận 7" },
+        { id: "Q8", name: "Quận 8" },
+        { id: "Q9", name: "Quận 9" },
+        { id: "Q10", name: "Quận 10" },
+        { id: "Q11", name: "Quận 11" },
+        { id: "Q12", name: "Quận 12" },
+        { id: "Bình Thạnh", name: "Bình Thạnh" },
+        { id: "Bình Tân", name: "Bình Tân" },
+        { id: "Phú Nhuận", name: "Phú Nhuận" },
+        { id: "Tân Phú", name: "Tân Phú" },
+        { id: "Thủ Đức", name: "Thủ Đức" }, // (Quận cũ + Quận 2, 9)
+        { id: "Gò Vấp", name: "Gò Vấp" },
+        { id: "Hóc Môn", name: "Hóc Môn" },
+        { id: "Củ Chi", name: "Củ Chi" },
+        { id: "Nhà Bè", name: "Nhà Bè" },
+        { id: "Cần Giờ", name: "Cần Giờ" },
+        { id: "Tân Bình", name: "Tân Bình" },
+    ]);
+    const [selectedDistrict, setSelectedDistrict] = useState("");
+
     const loadBaiDos = async () => {
         try {
             setLoading(true);
@@ -21,8 +48,14 @@ const Baido = () => {
             let url = `${endpoints['baidos']}?page=${page}`;
 
             let tenBaiDo = q.get('tenBai');
+            let diaChiBaiDo = q.get('diaChi');
+
+            console.info(diaChiBaiDo);
             if(tenBaiDo){
                 url = `${url}&tenBai=${tenBaiDo}`;
+            }
+            if (diaChiBaiDo){
+                url = `${url}&diaChi=${diaChiBaiDo}`;
             }
 
             let res = await Apis.get(url);
@@ -54,7 +87,14 @@ const Baido = () => {
 
     const search = (e) => {
         e.preventDefault();
-        nav(`/baidos/?tenBai=${kw}`)
+        if(kw && selectedDistrict)
+            nav(`/baidos/?tenBai=${kw}&diaChi=${selectedDistrict}`)
+        else if (kw)
+            nav(`/baidos/?tenBai=${kw}`)
+        else if (selectedDistrict)
+            nav(`/baidos/?diaChi=${selectedDistrict}`)
+        else
+            nav(`/baidos`)
     }
 
     const loadMore = () => {
@@ -80,17 +120,35 @@ const Baido = () => {
 
             <Form onSubmit={search} className="d-flex justify-content-end">
                 <Row className="align-items-center">
+                    {/* Ô tìm kiếm tên bãi */}
                     <Col xs="auto">
-                    <Form.Control
-                        type="search"
-                        value ={kw}
-                        onChange={e => setKw(e.target.value)}
-                        placeholder="Tìm tên bãi"
-                        className="me-2"
-                    />
+                        <Form.Control
+                            type="search"
+                            value={kw}
+                            onChange={e => setKw(e.target.value)}
+                            placeholder="Tìm tên bãi"
+                            className="me-2"
+                        />
                     </Col>
+                    
+                    {/* Combobox chọn quận */}
                     <Col xs="auto">
-                    <Button variant="primary" type="submit">Tìm kiếm</Button>
+                        <Form.Select
+                            value={selectedDistrict}
+                            onChange={(e) => setSelectedDistrict(e.target.value)}
+                        >
+                            <option value="">Tất cả quận/huyện</option>
+                            {districts.map((district) => (
+                                <option key={district.id} value={district.id}>
+                                    {district.name}
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </Col>
+                    
+                    {/* Nút tìm kiếm */}
+                    <Col xs="auto">
+                        <Button variant="primary" type="submit">Tìm kiếm</Button>
                     </Col>
                 </Row>
             </Form>
