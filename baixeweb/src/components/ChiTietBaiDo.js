@@ -97,31 +97,71 @@ const ChiTietBaiDo = () => {
         return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
     }
 
-    const themBooking = async (idChoDo) => {
+    // const themBooking = async (idChoDo) => {
+    //     try {
+    //         setLoading(true);
+    //         const now = new Date();
+    //         let form = new FormData();
+    //         form.append('idBaiDo', baiDo.id);
+    //         form.append('idChoDo', idChoDo);
+    //         form.append('idNguoiDung', current_user.id);
+    //         form.append('thanhTien', tinhThanhTien());
+    //         form.append('thoiGianDat', formatDateToCustomString(now));
+    //         form.append('thoiGianBatDau', formatDateToCustomString(startTime));
+    //         form.append('thoiGianKetThuc', formatDateToCustomString(endTime));
+
+    //         for (let pair of form.entries()) {
+    //             console.info(`${pair[0]}:`, pair[1]);
+    //         }
+
+    //         let res = await Apis.post(endpoints['bookings'], form, {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data'
+    //             }
+    //         })
+
+    //     } catch (ex) {
+    //         console.error(ex);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }
+
+    const thanhToanVNPAY = async (idChoDo) => {
         try {
             setLoading(true);
             const now = new Date();
-            let form = new FormData();
+            const thanhTien = tinhThanhTien();
+
+            // 1. Tạo booking
+            const form = new FormData();
             form.append('idBaiDo', baiDo.id);
             form.append('idChoDo', idChoDo);
             form.append('idNguoiDung', current_user.id);
-            form.append('thanhTien', tinhThanhTien());
+            form.append('thanhTien', thanhTien);
             form.append('thoiGianDat', formatDateToCustomString(now));
             form.append('thoiGianBatDau', formatDateToCustomString(startTime));
             form.append('thoiGianKetThuc', formatDateToCustomString(endTime));
 
-            for (let pair of form.entries()) {
-                console.info(`${pair[0]}:`, pair[1]);
-            }
-
-            let res = await Apis.post(endpoints['bookings'], form, {
+            const bookingRes = await Apis.post(endpoints['bookings'], form, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
-            })
+            });
+
+            const bookingId = bookingRes.data.id;
+
+            const res = await Apis.get(`http://localhost:8080/SpringBaiXeThongMinh/api/create-payment?amount=${thanhTien}&bankCode=NCB`);
+
+            if (res.data && res.data.paymentUrl) {
+                window.location.href = res.data.paymentUrl;
+            } else {
+                alert("Không lấy được link thanh toán!");
+            }
 
         } catch (ex) {
             console.error(ex);
+            alert("Lỗi thanh toán!");
         } finally {
             setLoading(false);
         }
@@ -300,7 +340,7 @@ const ChiTietBaiDo = () => {
                     <Button variant="secondary" onClick={handleCloseDatChoModal}>
                         Hủy
                     </Button>
-                    <Button variant="primary" onClick={() => themBooking(currentChoDo.id)}>
+                    <Button variant="primary" onClick={() => thanhToanVNPAY(currentChoDo.id)}>
                         Xác nhận đặt chỗ
                     </Button>
                 </Modal.Footer>
