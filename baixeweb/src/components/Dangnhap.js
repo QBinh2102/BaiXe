@@ -30,7 +30,9 @@ const Dangnhap = () => {
         try {
             setLoading(true);
             let res = await Apis.post(endpoints['dangnhap'], { ...user });
-            cookie.save('token', res.data.token);
+            // cookie.save('token', res.data.token);
+            localStorage.setItem('token', res.data.token);
+            //  sessionStorage.setItem('token', res.data.token);
 
             let u = await authApis().get(endpoints['current-user']);
             console.info(u.data);

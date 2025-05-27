@@ -5,9 +5,11 @@
 package com.bxtm.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -73,13 +75,14 @@ public class Booking implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "trangThai")
     private String trangThai;
+   @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idBaiDo", referencedColumnName = "id")
-    @ManyToOne
-    @JsonIgnore
+    @JsonIgnoreProperties({"bookingSet", "hibernateLazyInitializer", "handler"})
     private Baido idBaiDo;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idChoDo", referencedColumnName = "id")
-    @ManyToOne
-    @JsonIgnore
+    @JsonIgnoreProperties({"bookingSet", "hibernateLazyInitializer", "handler"})
     private Chodo idChoDo;
     @JoinColumn(name = "idNguoiDung", referencedColumnName = "id")
     @ManyToOne

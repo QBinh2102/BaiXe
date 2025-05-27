@@ -35,4 +35,9 @@ public class BookingServiceImpl implements BookingService{
     public Booking createOrUpdate(Booking booking) {
         return this.bookingRepo.createOrUpdate(booking);
     }
+    
+     @Override
+    public List<Booking> getBookingByUserID(int idNguoiDung) {
+        return this.bookingRepo.getBookingByUserID(idNguoiDung);
+    }
 }

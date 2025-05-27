@@ -129,13 +129,14 @@ const Capnhatbaido = () => {
               required={i.required !== false}
               value={baiDo[i.field] || ""}
               onChange={(e) => {
-                // Không cho phép thay đổi số lượng (soLuong)
-                if (i.field === "soLuong") return;
+                
+                if (id && i.field === "soLuong") return;
                 setBaiDo({ ...baiDo, [i.field]: e.target.value });
               }}
-              // hoặc dùng readonly/disabled cho soLuong
-              {...(i.field === "soLuong" ? { readOnly: true } : {})}
+           
+              {...(id && i.field === "soLuong" ? { readOnly: true } : {})}
             />
+
           </Col>
         </Form.Group>
       ))}

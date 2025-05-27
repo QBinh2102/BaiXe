@@ -127,45 +127,59 @@ const ChiTietBaiDo = () => {
     //     }
     // }
 
-    const thanhToanVNPAY = async (idChoDo) => {
-        try {
-            setLoading(true);
-            const now = new Date();
-            const thanhTien = tinhThanhTien();
+  const thanhToanVNPAY = async (idChoDo) => {
+    try {
+        setLoading(true);
+        const now = new Date();
+        const thanhTien = tinhThanhTien();
 
-            // 1. Tạo booking
-            const form = new FormData();
-            form.append('idBaiDo', baiDo.id);
-            form.append('idChoDo', idChoDo);
-            form.append('idNguoiDung', current_user.id);
-            form.append('thanhTien', thanhTien);
-            form.append('thoiGianDat', formatDateToCustomString(now));
-            form.append('thoiGianBatDau', formatDateToCustomString(startTime));
-            form.append('thoiGianKetThuc', formatDateToCustomString(endTime));
+        // 1. Tạo booking
+        const form = new FormData();
+        form.append('idBaiDo', baiDo.id);
+        form.append('idChoDo', idChoDo);
+        form.append('idNguoiDung', current_user.id);
+        form.append('thanhTien', thanhTien);
+        form.append('thoiGianDat', formatDateToCustomString(now));
+        form.append('thoiGianBatDau', formatDateToCustomString(startTime));
+        form.append('thoiGianKetThuc', formatDateToCustomString(endTime));
 
-            const bookingRes = await Apis.post(endpoints['bookings'], form, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-
-            const bookingId = bookingRes.data.id;
-
-            const res = await Apis.get(`http://localhost:8080/SpringBaiXeThongMinh/api/create-payment?amount=${thanhTien}&bankCode=NCB`);
-
-            if (res.data && res.data.paymentUrl) {
-                window.location.href = res.data.paymentUrl;
-            } else {
-                alert("Không lấy được link thanh toán!");
+        const bookingRes = await Apis.post(endpoints['bookings'], form, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
             }
+        });
 
-        } catch (ex) {
-            console.error(ex);
-            alert("Lỗi thanh toán!");
-        } finally {
-            setLoading(false);
+        // Lấy idBooking và idNguoiDung để lưu localStorage
+        const bookingId = bookingRes.data.id;
+        const idNguoiDung = current_user.id;
+
+        localStorage.setItem("idNguoiDung", idNguoiDung); 
+        localStorage.setItem("idBooking", bookingId);     
+
+        // 2. Gọi API thanh toán VNPAY kèm bookingId
+        const res = await Apis.get(
+            "http://localhost:8080/SpringBaiXeThongMinh/api/create-payment", {
+            params: {
+                bookingId: bookingId, // ✅ truyền đúng bookingId
+                amount: thanhTien,
+                bankCode: "NCB" // hoặc để rỗng ""
+            }
+        });
+
+        if (res.data && res.data.paymentUrl) {
+            window.location.href = res.data.paymentUrl;
+        } else {
+            alert("Không lấy được link thanh toán!");
         }
+
+    } catch (ex) {
+        console.error(ex);
+        alert("Lỗi thanh toán!");
+    } finally {
+        setLoading(false);
     }
+}
+
 
     return (
         <>

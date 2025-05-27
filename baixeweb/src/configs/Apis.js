@@ -21,13 +21,14 @@ export const endpoints = {
 }
 
 export const authApis = () => {
-    return axios.create({
-        baseURL: BASE_URL,
-        headers: {
-            'Authorization': `Bearer ${cookie.load('token')}`
-        }
-    })
-}
+  return axios.create({
+    baseURL: BASE_URL,
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem("token")}`
+    }
+  });
+};
+
 
 export default axios.create ({
     baseURL: BASE_URL

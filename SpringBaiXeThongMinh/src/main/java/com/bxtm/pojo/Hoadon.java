@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.bxtm.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,10 +19,6 @@ import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- *
- * @author toquocbinh2102
- */
 @Entity
 @Table(name = "hoadon")
 @NamedQueries({
@@ -34,37 +26,50 @@ import java.util.Date;
     @NamedQuery(name = "Hoadon.findById", query = "SELECT h FROM Hoadon h WHERE h.id = :id"),
     @NamedQuery(name = "Hoadon.findByPhuongThuc", query = "SELECT h FROM Hoadon h WHERE h.phuongThuc = :phuongThuc"),
     @NamedQuery(name = "Hoadon.findByThoiGianThanhToan", query = "SELECT h FROM Hoadon h WHERE h.thoiGianThanhToan = :thoiGianThanhToan"),
-    @NamedQuery(name = "Hoadon.findByTrangThai", query = "SELECT h FROM Hoadon h WHERE h.trangThai = :trangThai")})
+    @NamedQuery(name = "Hoadon.findByTrangThai", query = "SELECT h FROM Hoadon h WHERE h.trangThai = :trangThai"),
+    @NamedQuery(name = "Hoadon.findByMaGD", query = "SELECT h FROM Hoadon h WHERE h.maGD = :maGD") // <-- Thêm NamedQuery mới
+})
 public class Hoadon implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "phuongThuc")
     private String phuongThuc;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "thoiGianThanhToan")
     @Temporal(TemporalType.TIMESTAMP)
     private Date thoiGianThanhToan;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "trangThai")
     private String trangThai;
+
+    
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(name = "maGD")
+    private String maGD;
+
     @JoinColumn(name = "idBooking", referencedColumnName = "id")
     @ManyToOne
-    @JsonIgnore
     private Booking idBooking;
+
     @JoinColumn(name = "idNguoiDung", referencedColumnName = "id")
     @ManyToOne
-    @JsonIgnore
     private Nguoidung idNguoiDung;
 
     public Hoadon() {
@@ -74,12 +79,15 @@ public class Hoadon implements Serializable {
         this.id = id;
     }
 
-    public Hoadon(Integer id, String phuongThuc, Date thoiGianThanhToan, String trangThai) {
+    public Hoadon(Integer id, String phuongThuc, Date thoiGianThanhToan, String trangThai, String maGD) {
         this.id = id;
         this.phuongThuc = phuongThuc;
         this.thoiGianThanhToan = thoiGianThanhToan;
         this.trangThai = trangThai;
+        this.maGD = maGD;
     }
+
+    // Getters & Setters
 
     public Integer getId() {
         return id;
@@ -113,6 +121,14 @@ public class Hoadon implements Serializable {
         this.trangThai = trangThai;
     }
 
+    public String getMaGD() {
+        return maGD;
+    }
+
+    public void setMaGD(String maGD) {
+        this.maGD = maGD;
+    }
+
     public Booking getIdBooking() {
         return idBooking;
     }
@@ -138,20 +154,15 @@ public class Hoadon implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Hoadon)) {
             return false;
         }
         Hoadon other = (Hoadon) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) ;
     }
 
     @Override
     public String toString() {
         return "com.bxtm.pojo.Hoadon[ id=" + id + " ]";
     }
-    
 }

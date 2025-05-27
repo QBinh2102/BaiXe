@@ -24,49 +24,66 @@ import java.util.*;
 @RequestMapping("/api")
 @CrossOrigin
 public class ApiVNPayController {
+
     @Autowired
     private VNPayService vnpayService;
-    
+
     @GetMapping("/create-payment")
     public ResponseEntity<Map<String, Object>> createPayment(
-            @RequestParam("amount") long amount, // Rõ ràng yêu cầu param
+            @RequestParam("bookingId") String bookingId,
+            @RequestParam("amount") long amount,
             @RequestParam("bankCode") String bankCode,
             HttpServletRequest request) {
 
         try {
-            String orderId = UUID.randomUUID().toString().replace("-", "").substring(0, 18);
-            String paymentUrl = vnpayService.createPayment(orderId, amount, bankCode, request);
+            String paymentUrl = vnpayService.createPayment(bookingId, amount, bankCode, request);
 
             return ResponseEntity.ok(Map.of(
-                "code", "00",
-                "message", "Success",
-                "paymentUrl", paymentUrl
+                    "code", "00",
+                    "message", "Success",
+                    "paymentUrl", paymentUrl
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
-                "code", "99",
-                "message", e.getMessage()
+                    "code", "99",
+                    "message", e.getMessage()
             ));
         }
     }
 
-    // Endpoint xử lý kết quả trả về từ VNPay
     @GetMapping("/payment-result")
     public ResponseEntity<Map<String, String>> handlePaymentResult(
-            @RequestParam Map<String, String> params) {
-        
-        String responseCode = params.get("vnp_ResponseCode");
-        if ("00".equals(responseCode)) {
-            return ResponseEntity.ok(Map.of(
-                "code", "00",
-                "message", "Payment successful",
-                "transactionId", params.get("vnp_TransactionNo")
-            ));
-        } else {
-            return ResponseEntity.ok(Map.of(
-                "code", responseCode,
-                "message", "Payment failed: " + params.get("vnp_ResponseMessage")
+            @RequestParam Map<String, String> params, HttpServletRequest request) {
+        try {
+            boolean isValid = vnpayService.validatePaymentResponse(params);
+
+            if (!isValid) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "code", "97",
+                        "message", "Invalid signature"
+                ));
+            }
+
+            String responseCode = params.get("vnp_ResponseCode");
+            if ("00".equals(responseCode)) {
+                return ResponseEntity.ok(Map.of(
+                        "code", "00",
+                        "message", "Payment successful",
+                        "transactionId", params.get("vnp_TransactionNo")
+                ));
+            } else {
+                return ResponseEntity.ok(Map.of(
+                        "code", responseCode,
+                        "message", "Payment failed: " + params.getOrDefault("vnp_ResponseMessage", "Unknown")
+                ));
+            }
+
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "code", "99",
+                    "message", "Exception: " + ex.getMessage()
             ));
         }
     }
+
 }

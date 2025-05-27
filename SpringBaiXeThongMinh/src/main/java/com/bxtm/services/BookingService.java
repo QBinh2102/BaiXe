@@ -16,4 +16,5 @@ public interface BookingService {
     List<Booking> getBookings(Map<String, String> params);
     Booking getBookingById(int id);
     Booking createOrUpdate(Booking booking);
+    List<Booking> getBookingByUserID(int idNguoiDung);
 }

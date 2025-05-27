@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 @CrossOrigin
 public class ApiBookingController {
+
     @Autowired
     private BookingService bookingService;
     @Autowired
@@ -45,19 +46,19 @@ public class ApiBookingController {
     private ChodoService choDoService;
     @Autowired
     private NguoidungService nguoiDungService;
-    
+
     @GetMapping("/bookings")
-    public ResponseEntity<List<Booking>> getBookings(@RequestParam Map<String, String> params){
+    public ResponseEntity<List<Booking>> getBookings(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.bookingService.getBookings(params), HttpStatus.OK);
     }
-    
+
     @GetMapping("/bookings/{idBooking}")
-    public ResponseEntity<Booking> getBookingById(@PathVariable(value="idBooking")int id){
+    public ResponseEntity<Booking> getBookingById(@PathVariable(value = "idBooking") int id) {
         return new ResponseEntity<>(this.bookingService.getBookingById(id), HttpStatus.OK);
     }
-    
+
     @PostMapping("/bookings")
-    public ResponseEntity<Booking> create(@RequestParam Map<String, String> params){
+    public ResponseEntity<Booking> create(@RequestParam Map<String, String> params) {
         Baido baiDo = this.baiDoService.getBaiDoById(Integer.parseInt(params.get("idBaiDo")));
         Chodo choDo = this.choDoService.getChoDoById(Integer.parseInt(params.get("idChoDo")));
         Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(Integer.parseInt(params.get("idNguoiDung")));
@@ -76,5 +77,29 @@ public class ApiBookingController {
         }
         newBooking.setTrangThai("Đang đặt");
         return new ResponseEntity<>(this.bookingService.createOrUpdate(newBooking), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/bookings/update-status")
+    public ResponseEntity<?> updateBookingStatus(@RequestParam Map<String, String> params) {
+        try {
+            int idBooking = Integer.parseInt(params.get("idBooking"));
+            String newStatus = params.get("trangThai");
+
+            Booking booking = this.bookingService.getBookingById(idBooking);
+            if (booking == null) {
+                return new ResponseEntity<>("Không tìm thấy booking", HttpStatus.NOT_FOUND);
+            }
+
+            booking.setTrangThai(newStatus);
+            this.bookingService.createOrUpdate(booking);
+            return new ResponseEntity<>("Cập nhật trạng thái thành công", HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("Lỗi cập nhật trạng thái", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/bookings/user/{idNguoiDung}")
+    public List<Booking> getBookingsByUserId(@PathVariable("idNguoiDung") int idNguoiDung) {
+        return this.bookingService.getBookingByUserID(idNguoiDung);
     }
 }

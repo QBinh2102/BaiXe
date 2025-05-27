@@ -1,3 +1,4 @@
+import { useReducer, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from "./components/layout/Header";
@@ -9,13 +10,40 @@ import Dangky from "./components/Dangky";
 import ChiTietBaiDo from "./components/ChiTietBaiDo";
 import Capnhatbaido from "./components/Capnhatbaido"
 import Chinhsuachodo from "./components/Chinhsuachodo"
+import VNPayResult from "./components/VNPayResult";
+import Lichsugiaodich from "./components/Lichsugiaodich";
+import Quanlygiaodich from "./components/Quanlygiaodich";
 import { Container } from "react-bootstrap";
 import { MyDispatchContext, MyUserContext } from "./configs/Contexts";
-import { useReducer } from "react";
 import MyUserReducer from "./reducers/MyUserReducer";
+import { authApis, endpoints } from "./configs/Apis";
+
+
+
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const token = localStorage.getItem("token");
+      if (token !== null) {
+        try {
+          let res = await authApis().get(endpoints['current-user']);
+          dispatch({
+            type: 'login',
+            payload: res.data
+          });
+        } catch (err) {
+          console.error("Lỗi kiểm tra đăng nhập:", err);
+          localStorage.removeItem("token"); 
+        }
+      }
+    };
+
+    checkLogin();
+  }, []);
+
   return (
     <MyUserContext.Provider value={user}>
       <MyDispatchContext.Provider value={dispatch}>
@@ -33,6 +61,10 @@ const App = () => {
               <Route path="/baidos/add" element={<Capnhatbaido/>} />
               <Route path="/baidos/edit/:id" element={<Capnhatbaido />} />
               <Route path="/baidos/chodos/:id" element={<Chinhsuachodo />} />
+              <Route path="/vnpay-result" element={<VNPayResult />} />
+              <Route path="/lichsugiaodich" element={<Lichsugiaodich />} />
+              <Route path="/quanlygiaodich" element={<Quanlygiaodich />} />
+               
             </Routes>
           </Container>
 

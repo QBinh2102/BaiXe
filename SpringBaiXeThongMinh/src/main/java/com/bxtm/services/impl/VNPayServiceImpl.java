@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.stereotype.Service;
@@ -36,20 +37,20 @@ public class VNPayServiceImpl implements VNPayService {
     private final String vnp_TmnCode = "JC5SW96N";
     private final String vnp_HashSecret = "SMWFYFQPWIJ3BKLP04ZUSQFFZWDE6L9S";
     private final String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    private final String vnp_ReturnUrl = "https://www.google.com/"; // URL return sau thanh toán
+    private final String vnp_ReturnUrl = "http://localhost:3000/vnpay-result"; // URL return sau thanh toán
 
     @Override
-    public String createPayment(String orderId, long amount, String bankCode, HttpServletRequest request)
+    public String createPayment(String bookingID, long amount, String bankCode, HttpServletRequest request)
             throws UnsupportedEncodingException {
 
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        bankCode = "NCB";
-        
-        String vnp_TxnRef = getRandomNumber(8);
+        bankCode = "";
+
+        String vnp_TxnRef = bookingID; // Truyền bookingID thay cho random số
         String vnp_IpAddr = getIpAddress(request);
-        
+
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
@@ -68,28 +69,28 @@ public class VNPayServiceImpl implements VNPayService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-        
+
         cld.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-        
-        List fieldNames = new ArrayList(vnp_Params.keySet());
+
+        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
+        Iterator<String> itr = fieldNames.iterator();
         while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                //Build hash data
+            String fieldName = itr.next();
+            String fieldValue = vnp_Params.get(fieldName);
+            if (fieldValue != null && fieldValue.length() > 0) {
                 hashData.append(fieldName);
                 hashData.append('=');
                 hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                //Build query
+
                 query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
                 query.append('=');
                 query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+
                 if (itr.hasNext()) {
                     query.append('&');
                     hashData.append('&');
@@ -101,8 +102,33 @@ public class VNPayServiceImpl implements VNPayService {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = vnp_Url + "?" + queryUrl;
 
-
         return paymentUrl;
+    }
+
+    public boolean validatePaymentResponse(Map<String, String> fields) {
+        String vnp_SecureHash = fields.get("vnp_SecureHash");
+        if (vnp_SecureHash == null) {
+            return false;
+        }
+
+        // Bỏ SecureHash và sort lại
+        Map<String, String> sortedData = new TreeMap<>();
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
+            if (!entry.getKey().equals("vnp_SecureHash") && !entry.getKey().equals("vnp_SecureHashType")) {
+                sortedData.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        String query = sortedData.entrySet()
+                .stream()
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .reduce((a, b) -> a + "&" + b)
+                .orElse("");
+
+        String secretKey = "SMWFYFQPWIJ3BKLP04ZUSQFFZWDE6L9S";
+        String generatedHash = hmacSHA512(secretKey, query);
+
+        return vnp_SecureHash.equalsIgnoreCase(generatedHash);
     }
 
     @Override
@@ -129,7 +155,7 @@ public class VNPayServiceImpl implements VNPayService {
         }
 
     }
-    
+
     public static String getRandomNumber(int len) {
         Random rnd = new Random();
         String chars = "0123456789";
@@ -139,7 +165,7 @@ public class VNPayServiceImpl implements VNPayService {
         }
         return sb.toString();
     }
-    
+
     public static String getIpAddress(HttpServletRequest request) {
         String ipAdress;
         try {

@@ -92,9 +92,9 @@ public class BookingRepositoryImpl implements BookingRepository {
 
         return query.getResultList();
     }
-    
+
     @Override
-    public Booking getBookingById(int id){
+    public Booking getBookingById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
         return s.get(Booking.class, id);
     }
@@ -112,4 +112,20 @@ public class BookingRepositoryImpl implements BookingRepository {
 
         return booking;
     }
+
+    @Override
+    public List<Booking> getBookingByUserID(int idNguoiDung) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<Booking> q = cb.createQuery(Booking.class);
+        Root root = q.from(Booking.class);
+        q.select(root);
+
+        Predicate predicate = cb.equal(root.get("idNguoiDung").get("id"), idNguoiDung);
+        q.where(predicate);
+
+        Query query = s.createQuery(q);
+        return query.getResultList();
+    }
+
 }

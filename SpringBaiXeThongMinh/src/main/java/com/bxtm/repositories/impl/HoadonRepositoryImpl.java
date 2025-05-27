@@ -61,6 +61,12 @@ public class HoadonRepositoryImpl implements HoadonRepository {
             if (phuongThuc != null && !phuongThuc.isEmpty()) {
                 predicates.add(cb.equal(root.get("phuongThuc").as(String.class), phuongThuc));
             }
+            
+            String maGD = params.get("maGD");
+            if (maGD != null && !maGD.isEmpty()) {
+                 predicates.add(cb.equal(root.get("maGD").as(String.class), maGD));
+             }
+
 
             q.where(predicates.toArray(Predicate[]::new));
         }
