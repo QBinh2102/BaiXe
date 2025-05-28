@@ -61,6 +61,16 @@ public class BaidoRepositoryImpl implements BaidoRepository {
             } else if (diaChi != null && !diaChi.isEmpty()) {
                 predicates.add(cb.like(root.get("diaChi").as(String.class), String.format("%%%s%%", diaChi)));
             }
+            
+            String fromPrice = params.get("fromPrice");
+            if (fromPrice != null && !fromPrice.isEmpty()) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("giaTien"), fromPrice));
+            }
+
+            String toPrice = params.get("toPrice");
+            if (toPrice != null && !toPrice.isEmpty()) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("giaTien"), toPrice));
+            }
 
             String trangThai = params.get("trangThai");
             if (trangThai != null && !trangThai.isEmpty()) {

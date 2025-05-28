@@ -1,5 +1,6 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <head>
         <title>Trang chủ</title>
     <th:block th:fragment="styles">
@@ -20,8 +21,14 @@
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/}" th:text="${trangChu}"></a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
                             <a class="nav-link" th:href="@{/baidos/}" th:text="${baiDo}"></a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" th:href="@{/nguoidungs/}" th:text="${nguoiDung}"></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" th:href="@{/logout}" sec:authorize="isAuthenticated()">Đăng xuất</a>
                         </li>
                     </ul>
                 </div>

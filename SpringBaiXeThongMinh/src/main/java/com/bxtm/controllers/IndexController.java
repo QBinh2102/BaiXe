@@ -22,12 +22,12 @@ public class IndexController {
     public void commonResponse(Model model){
         model.addAttribute("trangChu","Trang chủ");
         model.addAttribute("baiDo","Bãi đỗ");
+        model.addAttribute("nguoiDung","Người dùng");
     } 
     
     @RequestMapping("/")
     public String index(Model model){
-        model.addAttribute("trangChu","Trang chủ");
-        model.addAttribute("baiDo","Bãi đỗ");
+        
         model.addAttribute("msg", "Chào mừng đến với bãi đỗ xe thông minh");
         return "index";
     }

@@ -8,6 +8,29 @@
     <div th:replace="base :: header"></div>
 
     <main class="container">
+        <form th:action="@{/baidos/}">
+            <div class="mb-3 mt-3">
+
+                <input type="text" class="form-control" placeholder="Tên bãi đỗ..." name="tenBai">
+            </div>
+            <select class="form-select" name="diaChi">
+                <option value="">-- Chọn quận/huyện --</option>
+                <option th:each="quan : ${dsQuanHuyen}" 
+                        th:value="${quan.value}" 
+                        th:text="${quan.text}"
+                        th:selected="${param.diaChi != null && param.diaChi == quan.value}"></option>
+            </select>
+            <div class="row">
+                <div class="col-6 mb-3 mt-3">
+                    <input type="number" class="form-control" placeholder="Gía min..." name="fromPrice">
+                </div>
+                <div class="col-6 mb-3 mt-3">
+                    <input type="number" class="form-control" placeholder="Gía max..." name="toPrice">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </form>
+        <hr />
         <a th:href="@{/baidos/baido}" class="btn btn-success mt-1">Thêm bãi đỗ</a>
 
 
@@ -23,24 +46,24 @@
                     <th></th>
                 </tr>
             </thead>
-                        <tbody>
-                 <tr th:each="bd : ${baidos}">
-                     <td>
-                         <img th:src="${bd.anhBai}" width="200"/>
-                     </td>
-                     <td th:text="${bd.ten}"></td>
-                     <td th:text="${bd.diaChi}"></td>
-                     <td th:text="${bd.soLuong}"></td>
-                     <td th:text="${bd.giaTien}"></td>
-                     <td th:text="${bd.trangThai}"></td>
-                     <td>
-<!--                         /baidos/{idBaiDo}/choDo-->
-                         <a th:href="@{'/baidos/'+ ${bd.id} +'/choDo/'}" class="btn btn-info">Xem chi tiết</a>
-                         <a th:href="@{'/baidos/' + ${bd.id}}" class="btn btn-primary">Sửa</a>
-                         <button class="btn btn-danger">&times;</button>
-                     </td>
-                 </tr>
-             </tbody>
+            <tbody>
+                <tr th:each="bd : ${baidos}">
+                    <td>
+                        <img th:src="${bd.anhBai}" width="200"/>
+                    </td>
+                    <td th:text="${bd.ten}"></td>
+                    <td th:text="${bd.diaChi}"></td>
+                    <td th:text="${bd.soLuong}"></td>
+                    <td th:if="${bd.giaTien != null}" th:text="${#numbers.formatInteger(bd.giaTien, 3, 'POINT') + ' VNĐ'}"></td>
+                    <td th:unless="${bd.giaTien != null}">0 VNĐ</td>
+                    <td th:text="${bd.trangThai}"></td>
+                    <td>
+                        <!--                         /baidos/{idBaiDo}/choDo-->
+                        <a th:href="@{'/baidos/'+ ${bd.id} +'/choDo/'}" class="btn btn-info">Xem chi tiết</a>
+                        <a th:href="@{'/baidos/' + ${bd.id}}" class="btn btn-primary">Sửa</a>
+                    </td>
+                </tr>
+            </tbody>
 
         </table>
     </main>
