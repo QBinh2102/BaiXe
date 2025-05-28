@@ -26,15 +26,21 @@ const Header = () => {
                 <Link to="/baidos" className="nav-link">Bãi xe</Link>
 
               
-                {user.vaiTro === "ROLE_ADMIN" ? (
+               {user.vaiTro === "ROLE_ADMIN" ? (
+                <>
                   <Link to="/quanlygiaodich" className="nav-link">
                     Quản lý giao dịch
                   </Link>
-                ) : (
-                  <Link to="/lichsugiaodich" className="nav-link">
-                    Lịch sử giao dịch
+                  <Link to="/quanlynguoidung" className="nav-link">
+                    Quản lý người dùng
                   </Link>
-                )}
+                </>
+              ) : (
+                <Link to="/lichsugiaodich" className="nav-link">
+                  Lịch sử giao dịch
+                </Link>
+              )}
+
 
                 <Link to="/thongtin" className="nav-link text-success">
                   <Image src={user.avatar} className="rounded" width="40" alt="avatar" />

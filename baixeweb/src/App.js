@@ -13,6 +13,8 @@ import Chinhsuachodo from "./components/Chinhsuachodo"
 import VNPayResult from "./components/VNPayResult";
 import Lichsugiaodich from "./components/Lichsugiaodich";
 import Quanlygiaodich from "./components/Quanlygiaodich";
+import Quanlynguoidung from "./components/Quanlynguoidung";
+import Chitietnguoidung from "./components/Chitietnguoidung";
 import { Container } from "react-bootstrap";
 import { MyDispatchContext, MyUserContext } from "./configs/Contexts";
 import MyUserReducer from "./reducers/MyUserReducer";
@@ -64,6 +66,8 @@ const App = () => {
               <Route path="/vnpay-result" element={<VNPayResult />} />
               <Route path="/lichsugiaodich" element={<Lichsugiaodich />} />
               <Route path="/quanlygiaodich" element={<Quanlygiaodich />} />
+              <Route path="/quanlynguoidung" element={<Quanlynguoidung />} />
+               <Route path="/nguoidung/:id" element={<Chitietnguoidung />} />
                
             </Routes>
           </Container>

@@ -63,8 +63,8 @@ function Lichsugiaodich() {
             {bookings.map((booking) => (
               <tr key={booking.id} style={{ borderBottom: "1px solid #ccc" }}>
                 <td style={tdStyle}>{booking.id}</td>
-                <td style={tdStyle}>{booking.idBaiDo?.tenBaiDo || "N/A"}</td>
-                <td style={tdStyle}>{booking.idChoDo?.tenChoDo || "N/A"}</td>
+                <td style={tdStyle}>{booking.idBaiDo?.ten || "N/A"}</td>
+                <td style={tdStyle}>{booking.idChoDo?.viTri || "N/A"}</td>
                 <td style={tdStyle}>{formatDateTime(booking.thoiGianDat)}</td>
                 <td style={tdStyle}>{formatDateTime(booking.thoiGianBatDau)}</td>
                 <td style={tdStyle}>{formatDateTime(booking.thoiGianKetThuc)}</td>

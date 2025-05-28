@@ -18,6 +18,7 @@ export const endpoints = {
     'capnhatanhxe': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatanhxe`,
     'capnhatavatar': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatavatar`,
     'capnhatkhonganh': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatkhonganh`,
+    'thongtinnguoidung': (idNguoiDung) => `/nguoidungs/${idNguoiDung}`,
 }
 
 export const authApis = () => {

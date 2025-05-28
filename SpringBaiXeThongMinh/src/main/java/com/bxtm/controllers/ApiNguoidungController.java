@@ -9,12 +9,14 @@ import com.bxtm.services.NguoidungService;
 import com.bxtm.utils.JwtUtils;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +38,16 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApiNguoidungController {
     @Autowired
     private NguoidungService nguoiDungService;
+    
+    @GetMapping("/nguoidungs")
+    public ResponseEntity<List<Nguoidung>> getNguoiDung(@RequestParam Map<String, String> params) {
+        return new ResponseEntity<>(this.nguoiDungService.getNguoiDung(params), HttpStatus.OK);
+    }
+    
+    @GetMapping("/nguoidungs/{id}")
+    public ResponseEntity<Nguoidung> getNguoiDungById(@PathVariable("id") int id) {
+        return new ResponseEntity<>(this.nguoiDungService.getNguoiDungById(id), HttpStatus.OK);
+    }
     
     @PostMapping(path="/nguoidungs",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -126,13 +138,24 @@ public class ApiNguoidungController {
         Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
         nguoiDung.setHoTen(params.get("hoTen"));
         nguoiDung.setTaiKhoan(params.get("taiKhoan"));
-        nguoiDung.setMatKhau(params.get("matKhau"));
+        
+         if (params.get("matKhau") != null || !params.get("matKhau").isEmpty() || params.get("matKhau").equals("")) {
+            nguoiDung.setMatKhau(params.get("matKhau"));
+        }
+         
         nguoiDung.setEmail(params.get("email"));
         nguoiDung.setSdt(params.get("sdt"));
         nguoiDung.setCccd(params.get("cccd"));
         nguoiDung.setHieuXe(params.get("hieuXe"));
         nguoiDung.setBienSo(params.get("bienSo"));
         nguoiDung.setMauXe(params.get("mauXe"));
+        
+         if (params.containsKey("vaiTro")) {
+            nguoiDung.setVaiTro(params.get("vaiTro"));
+        }
+        if (params.containsKey("active")) {
+            nguoiDung.setActive(Boolean.valueOf(params.get("active")));
+        }
         
         return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
     }
