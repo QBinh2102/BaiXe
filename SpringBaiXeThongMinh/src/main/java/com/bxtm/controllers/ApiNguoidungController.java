@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,17 +38,22 @@ public class ApiNguoidungController {
     @Autowired
     private NguoidungService nguoiDungService;
     
-    @GetMapping("/nguoidungs")
+    @GetMapping("/secure/admin/nguoidungs/")
     public ResponseEntity<List<Nguoidung>> getNguoiDung(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.nguoiDungService.getNguoiDung(params), HttpStatus.OK);
     }
     
-    @GetMapping("/nguoidungs/{id}")
+    @GetMapping("/secure/admin/nguoidungs/{id}/")
     public ResponseEntity<Nguoidung> getNguoiDungById(@PathVariable("id") int id) {
         return new ResponseEntity<>(this.nguoiDungService.getNguoiDungById(id), HttpStatus.OK);
     }
     
-    @PostMapping(path="/nguoidungs",
+    @GetMapping("/secure/me/nguoidungs/")
+    public ResponseEntity<Nguoidung> getThongTinNguoiDung(Principal principal) {
+        return new ResponseEntity<>(this.nguoiDungService.getNguoiDungByTaiKhoan(principal.getName()), HttpStatus.OK);
+    }
+    
+    @PostMapping(path="/nguoidungs/",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Nguoidung> register(@RequestParam Map<String,String> params, 
@@ -73,99 +77,186 @@ public class ApiNguoidungController {
         return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(newNguoiDung), HttpStatus.CREATED);
     }
     
-    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhat")
+    @PatchMapping("/secure/admin/nguoidungs/{idNguoiDung}/")
     public ResponseEntity<Nguoidung> updateNguoiDung(@PathVariable(value="idNguoiDung") int id,
             @RequestParam Map<String,String> params,
-            @RequestParam("avatar") MultipartFile avatar,
-            @RequestParam("anhXe") MultipartFile anhXe){
+            @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+            @RequestParam(value = "anhXe", required = false) MultipartFile anhXe){
         Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
-        nguoiDung.setHoTen(params.get("hoTen"));
-        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
-        nguoiDung.setMatKhau(params.get("matKhau"));
-        nguoiDung.setEmail(params.get("email"));
-        nguoiDung.setSdt(params.get("sdt"));
-        nguoiDung.setCccd(params.get("cccd"));
-        nguoiDung.setHieuXe(params.get("hieuXe"));
-        nguoiDung.setBienSo(params.get("bienSo"));
-        nguoiDung.setMauXe(params.get("mauXe"));
-        nguoiDung.setFileAnhXe(anhXe);
-        nguoiDung.setFile(avatar);
+        
+        String hoTen = params.get("hoTen");
+        String taiKhoan = params.get("taiKhoan");
+        String matKhau = params.get("matKhau");
+        String email = params.get("email");
+        String sdt = params.get("sdt");
+        String cccd = params.get("cccd");
+        String hieuXe = params.get("hieuXe");
+        String bienSo = params.get("bienSo");
+        String mauXe = params.get("mauXe");
+        
+        if(hoTen!=null&&!hoTen.isEmpty()){
+            nguoiDung.setHoTen(hoTen);
+        }
+        if(taiKhoan!=null&&!taiKhoan.isEmpty()){
+            nguoiDung.setTaiKhoan(taiKhoan);
+        }
+        if(matKhau!=null&&!matKhau.isEmpty()){
+            nguoiDung.setMatKhau(matKhau);
+        }
+        if(email!=null&&!email.isEmpty()){
+            nguoiDung.setEmail(email);
+        }
+        if(sdt!=null&&!sdt.isEmpty()){
+            nguoiDung.setSdt(sdt);
+        }
+        if(cccd!=null&&!cccd.isEmpty()){
+            nguoiDung.setCccd(cccd);
+        }
+        if(hieuXe!=null&&!hieuXe.isEmpty()){
+            nguoiDung.setHieuXe(hieuXe);
+        }
+        if(bienSo!=null&&!bienSo.isEmpty()){
+            nguoiDung.setBienSo(bienSo);
+        }
+        if(mauXe!=null&&!mauXe.isEmpty()){
+            nguoiDung.setMauXe(mauXe);
+        }
+        if(anhXe!=null&&!anhXe.isEmpty()){
+            nguoiDung.setFileAnhXe(anhXe);
+        }
+        if(avatar!=null&&!avatar.isEmpty()){
+            nguoiDung.setFile(avatar);
+        }
         
         return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
     }
     
-    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatanhxe")
-    public ResponseEntity<Nguoidung> updateNguoiDungAnhXe(@PathVariable(value="idNguoiDung") int id,
+    @PatchMapping("/secure/me/nguoidungs/")
+    public ResponseEntity<Nguoidung> updateNguoiDungMe(Principal principal,
             @RequestParam Map<String,String> params,
-            @RequestParam("anhXe") MultipartFile anhXe){
-        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
-        nguoiDung.setHoTen(params.get("hoTen"));
-        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
-        nguoiDung.setMatKhau(params.get("matKhau"));
-        nguoiDung.setEmail(params.get("email"));
-        nguoiDung.setSdt(params.get("sdt"));
-        nguoiDung.setCccd(params.get("cccd"));
-        nguoiDung.setHieuXe(params.get("hieuXe"));
-        nguoiDung.setBienSo(params.get("bienSo"));
-        nguoiDung.setMauXe(params.get("mauXe"));
-        nguoiDung.setFileAnhXe(anhXe);
+            @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+            @RequestParam(value = "anhXe", required = false) MultipartFile anhXe){
+        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungByTaiKhoan(principal.getName());
+        String hoTen = params.get("hoTen");
+        String taiKhoan = params.get("taiKhoan");
+        String matKhau = params.get("matKhau");
+        String email = params.get("email");
+        String sdt = params.get("sdt");
+        String cccd = params.get("cccd");
+        String hieuXe = params.get("hieuXe");
+        String bienSo = params.get("bienSo");
+        String mauXe = params.get("mauXe");
+        
+        if(hoTen!=null&&!hoTen.isEmpty()){
+            nguoiDung.setHoTen(hoTen);
+        }
+        if(taiKhoan!=null&&!taiKhoan.isEmpty()){
+            nguoiDung.setTaiKhoan(taiKhoan);
+        }
+        if(matKhau!=null&&!matKhau.isEmpty()){
+            nguoiDung.setMatKhau(matKhau);
+        }
+        if(email!=null&&!email.isEmpty()){
+            nguoiDung.setEmail(email);
+        }
+        if(sdt!=null&&!sdt.isEmpty()){
+            nguoiDung.setSdt(sdt);
+        }
+        if(cccd!=null&&!cccd.isEmpty()){
+            nguoiDung.setCccd(cccd);
+        }
+        if(hieuXe!=null&&!hieuXe.isEmpty()){
+            nguoiDung.setHieuXe(hieuXe);
+        }
+        if(bienSo!=null&&!bienSo.isEmpty()){
+            nguoiDung.setBienSo(bienSo);
+        }
+        if(mauXe!=null&&!mauXe.isEmpty()){
+            nguoiDung.setMauXe(mauXe);
+        }
+        if(anhXe!=null&&!anhXe.isEmpty()){
+            nguoiDung.setFileAnhXe(anhXe);
+        }
+        if(avatar!=null&&!avatar.isEmpty()){
+            nguoiDung.setFile(avatar);
+        }
         
         return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
     }
     
-    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatavatar")
-    public ResponseEntity<Nguoidung> updateNguoiDungAvatar(@PathVariable(value="idNguoiDung") int id,
-            @RequestParam Map<String,String> params,
-            @RequestParam("avatar") MultipartFile avatar){
-        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
-        nguoiDung.setHoTen(params.get("hoTen"));
-        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
-        nguoiDung.setMatKhau(params.get("matKhau"));
-        nguoiDung.setEmail(params.get("email"));
-        nguoiDung.setSdt(params.get("sdt"));
-        nguoiDung.setCccd(params.get("cccd"));
-        nguoiDung.setHieuXe(params.get("hieuXe"));
-        nguoiDung.setBienSo(params.get("bienSo"));
-        nguoiDung.setMauXe(params.get("mauXe"));
-        nguoiDung.setFile(avatar);
-        
-        return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
-    }
-    
-    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatkhonganh")
-    public ResponseEntity<Nguoidung> updateNguoiDungKhongAnh(@PathVariable(value="idNguoiDung") int id,
-            @RequestParam Map<String,String> params){
-        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
-        nguoiDung.setHoTen(params.get("hoTen"));
-        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
-        
-         if (params.get("matKhau") != null || !params.get("matKhau").isEmpty() || params.get("matKhau").equals("")) {
-            nguoiDung.setMatKhau(params.get("matKhau"));
-        }
-         
-        nguoiDung.setEmail(params.get("email"));
-        nguoiDung.setSdt(params.get("sdt"));
-        nguoiDung.setCccd(params.get("cccd"));
-        nguoiDung.setHieuXe(params.get("hieuXe"));
-        nguoiDung.setBienSo(params.get("bienSo"));
-        nguoiDung.setMauXe(params.get("mauXe"));
-        
-         if (params.containsKey("vaiTro")) {
-            nguoiDung.setVaiTro(params.get("vaiTro"));
-        }
-        if (params.containsKey("active")) {
-            nguoiDung.setActive(Boolean.valueOf(params.get("active")));
-        }
-        
-        return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
-    }
+//    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatanhxe")
+//    public ResponseEntity<Nguoidung> updateNguoiDungAnhXe(@PathVariable(value="idNguoiDung") int id,
+//            @RequestParam Map<String,String> params,
+//            @RequestParam("anhXe") MultipartFile anhXe){
+//        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
+//        nguoiDung.setHoTen(params.get("hoTen"));
+//        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
+//        nguoiDung.setMatKhau(params.get("matKhau"));
+//        nguoiDung.setEmail(params.get("email"));
+//        nguoiDung.setSdt(params.get("sdt"));
+//        nguoiDung.setCccd(params.get("cccd"));
+//        nguoiDung.setHieuXe(params.get("hieuXe"));
+//        nguoiDung.setBienSo(params.get("bienSo"));
+//        nguoiDung.setMauXe(params.get("mauXe"));
+//        nguoiDung.setFileAnhXe(anhXe);
+//        
+//        return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
+//    }
+//    
+//    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatavatar")
+//    public ResponseEntity<Nguoidung> updateNguoiDungAvatar(@PathVariable(value="idNguoiDung") int id,
+//            @RequestParam Map<String,String> params,
+//            @RequestParam("avatar") MultipartFile avatar){
+//        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
+//        nguoiDung.setHoTen(params.get("hoTen"));
+//        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
+//        nguoiDung.setMatKhau(params.get("matKhau"));
+//        nguoiDung.setEmail(params.get("email"));
+//        nguoiDung.setSdt(params.get("sdt"));
+//        nguoiDung.setCccd(params.get("cccd"));
+//        nguoiDung.setHieuXe(params.get("hieuXe"));
+//        nguoiDung.setBienSo(params.get("bienSo"));
+//        nguoiDung.setMauXe(params.get("mauXe"));
+//        nguoiDung.setFile(avatar);
+//        
+//        return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
+//    }
+//    
+//    @PatchMapping("/nguoidungs/{idNguoiDung}/capnhatkhonganh")
+//    public ResponseEntity<Nguoidung> updateNguoiDungKhongAnh(@PathVariable(value="idNguoiDung") int id,
+//            @RequestParam Map<String,String> params){
+//        Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungById(id);
+//        nguoiDung.setHoTen(params.get("hoTen"));
+//        nguoiDung.setTaiKhoan(params.get("taiKhoan"));
+//        
+//         if (params.get("matKhau") != null || !params.get("matKhau").isEmpty() || params.get("matKhau").equals("")) {
+//            nguoiDung.setMatKhau(params.get("matKhau"));
+//        }
+//         
+//        nguoiDung.setEmail(params.get("email"));
+//        nguoiDung.setSdt(params.get("sdt"));
+//        nguoiDung.setCccd(params.get("cccd"));
+//        nguoiDung.setHieuXe(params.get("hieuXe"));
+//        nguoiDung.setBienSo(params.get("bienSo"));
+//        nguoiDung.setMauXe(params.get("mauXe"));
+//        
+//         if (params.containsKey("vaiTro")) {
+//            nguoiDung.setVaiTro(params.get("vaiTro"));
+//        }
+//        if (params.containsKey("active")) {
+//            nguoiDung.setActive(Boolean.valueOf(params.get("active")));
+//        }
+//        
+//        return new ResponseEntity<>(this.nguoiDungService.createOrUpdate(nguoiDung), HttpStatus.OK);
+//    }
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Nguoidung nguoiDung) {
 
         if (this.nguoiDungService.authenticate(nguoiDung.getTaiKhoan(), nguoiDung.getMatKhau())) {
             try {
-                String token = JwtUtils.generateToken(nguoiDung.getTaiKhoan());
+                Nguoidung nd = this.nguoiDungService.getNguoiDungByTaiKhoan(nguoiDung.getTaiKhoan());
+                String token = JwtUtils.generateToken(nguoiDung.getTaiKhoan(), nd.getVaiTro());
                 return ResponseEntity.ok().body(Collections.singletonMap("token", token));
             } catch (Exception e) {
                 return ResponseEntity.status(500).body("Lỗi khi tạo JWT");

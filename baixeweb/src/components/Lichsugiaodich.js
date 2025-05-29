@@ -1,40 +1,96 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { MyUserContext } from "../configs/Contexts";
+import { authApis, endpoints } from "../configs/Apis";
 
 function Lichsugiaodich() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const current_user = useContext(MyUserContext);
 
-
-  const idNguoiDung = localStorage.getItem("idNguoiDung");
+  const idNguoiDung = current_user.id;
 
   useEffect(() => {
-  if (!idNguoiDung) {
-    setError("Bạn chưa đăng nhập");
-    setLoading(false);
+    if (!idNguoiDung) {
+      setError("Bạn chưa đăng nhập");
+      setLoading(false);
+      return;
+    }
+
+    const fetchBookings = async () => {
+      try {
+        const res = await authApis().get(endpoints['bookingNguoiDung']);
+
+        const sortedData = res.data.sort((a, b) => b.id - a.id);
+
+        setBookings(sortedData);
+      } catch (err) {
+        setError(err.message || "Lỗi không xác định");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [idNguoiDung]);
+
+  const handleRefundRequest = async (idBooking) => {
+  const booking = bookings.find(b => b.id === idBooking);
+  if (!booking) {
+    alert("Không tìm thấy booking.");
     return;
   }
 
-  const fetchBookings = async () => {
-    try {
-      
-       const res = await fetch(`http://localhost:8080/SpringBaiXeThongMinh/api/bookings/user/${idNguoiDung}`);
+  const now = new Date();
+  const startTime = new Date(booking.thoiGianBatDau);
+  const diffMs = startTime - now;
+  const diffHours = diffMs / (1000 * 60 * 60);
 
-      if (!res.ok) throw new Error("Lỗi khi tải dữ liệu booking");
+  if (diffHours < 1) {
+    alert("Bạn chỉ có thể yêu cầu hoàn tiền trước thời gian bắt đầu ít nhất 1 tiếng.");
+    return;
+  }
 
-      const data = await res.json();
-      data.sort((a, b) => new Date(b.thoiGianDat) - new Date(a.thoiGianDat));
+  const formattedStart = formatDateTime(booking.thoiGianBatDau);
+  const formattedMoney = booking.thanhTien?.toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }) || "0đ";
 
-      setBookings(data);
-    } catch (err) {
-      setError(err.message || "Lỗi không xác định");
-    } finally {
-      setLoading(false);
+  const confirmMsg = `
+Bạn sắp gửi yêu cầu hoàn tiền cho:
+- Mã booking: ${booking.id}
+- Bãi đỗ: ${booking.idBaiDo?.ten || "N/A"}
+- Chỗ đỗ: ${booking.idChoDo?.viTri || "N/A"}
+- Thời gian bắt đầu: ${formattedStart}
+- Số tiền: ${formattedMoney}
+
+⚠️ Yêu cầu hoàn tiền sẽ được gửi lên hệ thống và chờ xử lý.
+Bạn có chắc chắn muốn tiếp tục?
+  `.trim();
+
+  const confirmed = window.confirm(confirmMsg);
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(
+      `http://localhost:8080/SpringBaiXeThongMinh/api/bookings/${idBooking}/status?trangThai=yeu_cau_hoan_tien`,
+      { method: "PATCH" }
+    );
+
+    if (!res.ok) {
+      const msg = await res.text();
+      throw new Error(msg || "Lỗi khi gửi yêu cầu hoàn tiền.");
     }
-  };
 
-  fetchBookings();
-}, [idNguoiDung]);
+    alert("✅ Yêu cầu hoàn tiền đã được gửi.");
+    setBookings(prev =>
+      prev.map(b => b.id === idBooking ? { ...b, trangThai: "yeu_cau_hoan_tien" } : b)
+    );
+  } catch (error) {
+    alert("❌ Lỗi: " + error.message);
+  }
+};
 
   if (loading) return <p>Đang tải dữ liệu lịch sử giao dịch...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -57,6 +113,7 @@ function Lichsugiaodich() {
               <th style={thStyle}>Thời gian kết thúc</th>
               <th style={thStyle}>Thành tiền</th>
               <th style={thStyle}>Trạng thái</th>
+              <th style={thStyle}>Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -68,8 +125,20 @@ function Lichsugiaodich() {
                 <td style={tdStyle}>{formatDateTime(booking.thoiGianDat)}</td>
                 <td style={tdStyle}>{formatDateTime(booking.thoiGianBatDau)}</td>
                 <td style={tdStyle}>{formatDateTime(booking.thoiGianKetThuc)}</td>
-                <td style={tdStyle}>{booking.thanhTien?.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) || 0}</td>
+                <td style={tdStyle}>
+                  {booking.thanhTien?.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || 0}
+                </td>
                 <td style={tdStyle}>{booking.trangThai}</td>
+                <td style={tdStyle}>
+                 {booking.trangThai === "da_dat" && new Date(booking.thoiGianBatDau) > new Date() && (
+                  <button onClick={() => handleRefundRequest(booking.id)}>
+                    Yêu cầu hoàn tiền
+                  </button>
+                )}
+                </td>
               </tr>
             ))}
           </tbody>

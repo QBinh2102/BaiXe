@@ -69,7 +69,8 @@ public class NguoidungServiceImpl implements NguoidungService{
     
     @Override
     public Nguoidung createOrUpdate(Nguoidung nguoiDung) {
-        nguoiDung.setMatKhau(this.passwordEncoder.encode(nguoiDung.getMatKhau()));
+        if(nguoiDung.getId()==null)
+            nguoiDung.setMatKhau(this.passwordEncoder.encode(nguoiDung.getMatKhau()));
         if(nguoiDung.getFile() != null && !nguoiDung.getFile().isEmpty()){
             try {
                 Map res = cloudinary.uploader().upload(nguoiDung.getFile().getBytes(),

@@ -65,12 +65,6 @@ const Dangky = () => {
         return true;
     }
 
-    useEffect(() => {
-        if (current_user !== null) {
-            setUser(current_user);
-        }
-    }, [current_user]);
-
     const dangKy = async (e) => {
         e.preventDefault();
         if (validate()) {
@@ -79,20 +73,13 @@ const Dangky = () => {
                 if (key !== 'confirm') {
                     form.append(key, user[key]);
                 }
-            
-            const hasAnhXe = anhXe.current?.files[0] !== undefined;
-            const hasAvatar = avatar.current?.files[0] !== undefined;
 
-            if (hasAvatar) {
+            if (avatar) {
                 form.append('avatar', avatar.current.files[0]);
             }
-            if (hasAnhXe) {
+            if (anhXe) {
                 form.append('anhXe', anhXe.current.files[0]);
             }
-
-            // for (let pair of form.entries()) {
-            //     console.info(`${pair[0]}:`, pair[1]);
-            // }
 
             if(current_user===null) {
                 try {
@@ -110,71 +97,13 @@ const Dangky = () => {
                 } finally{
                     setLoading(false);
                 }
-            } else {
-                if (hasAnhXe && hasAvatar) {
-                    try {
-                        setLoading(true);
-                        let res = await Apis.patch(endpoints['capnhat'](current_user.id), form, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        });
-                    } catch (ex) {
-                        console.error(ex);
-                    } finally{
-                        setLoading(false);
-                    }
-                } else if (hasAnhXe && !hasAvatar) {
-                    try {
-                        setLoading(true);
-                        let res = await Apis.patch(endpoints['capnhatanhxe'](current_user.id), form, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        });
-                    } catch (ex) {
-                        console.error(ex);
-                    } finally{
-                        setLoading(false);
-                    }
-                } else if (!hasAnhXe && hasAvatar) {
-                    try {
-                        setLoading(true);
-                        let res = await Apis.patch(endpoints['capnhatavatar'](current_user.id), form, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        });
-                    } catch (ex) {
-                        console.error(ex);
-                    } finally{
-                        setLoading(false);
-                    }
-                } else {
-                    try {
-                        setLoading(true);
-                        let res = await Apis.patch(endpoints['capnhatkhonganh'](current_user.id), form, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        });
-                    } catch (ex) {
-                        console.error(ex);
-                    } finally{
-                        setLoading(false);
-                    }
-                }
             }
         }
     }
 
     return (
         <>
-            {current_user === null ? <>
-                <h1 className="text-center text-success mt-2">Đăng ký người dùng</h1>
-            </>:<>
-                <h1 className="text-center text-success mt-2">Thông tin người dùng</h1>
-            </>}
+            <h1 className="text-center text-success mt-2">Đăng ký người dùng</h1>
             
             {msg && <Alert variant="warning" className="mt-1">{msg}</Alert>}
             <Form onSubmit={dangKy}>
@@ -185,49 +114,19 @@ const Dangky = () => {
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="1">Ảnh xe</Form.Label>
                     <Col sm="11">
-                        {current_user ? <>
-                            <div className="mb-2">
-                                <img
-                                src={current_user.anhXe}
-                                alt="Ảnh xe"
-                                style={{ maxHeight: '150px', borderRadius: '8px' }}
-                                />
-                            </div>
-                            <Form.Control ref={anhXe} type="file" />
-                        </>:<>
-                            <Form.Control ref={anhXe} type="file" required />
-                        </> 
-                        }
-                        
+                        <Form.Control ref={anhXe} type="file" required />
                     </Col>
                 </Form.Group>
 
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="1">Avatar</Form.Label>
                     <Col sm="11">
-                        {current_user ? <>
-                            <div className="mb-2">
-                                <img
-                                src={current_user.avatar}
-                                alt="Avatar"
-                                style={{ maxHeight: '150px', borderRadius: '8px' }}
-                                />
-                            </div>
-                            <Form.Control ref={avatar} type="file" />
-                        </>:<>
-                            <Form.Control ref={avatar} type="file" required />
-                        </> 
-                        }
+                        <Form.Control ref={avatar} type="file" required />
                     </Col>
                 </Form.Group>
 
                 <Form.Group className="mb-3 text-center">
-                    {current_user ? <>
-                        {loading === true?<MySpinner/>:<Button type="submit" >Cập nhật</Button>}
-                    </>:<>
-                        {loading === true?<MySpinner/>:<Button type="submit" variant="danger" >Đăng ký</Button>}
-                    </>}
-                    
+                    {loading === true?<MySpinner/>:<Button type="submit" variant="danger" >Đăng ký</Button>}
                 </Form.Group>
 
             </Form>

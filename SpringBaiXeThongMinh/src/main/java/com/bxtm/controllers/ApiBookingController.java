@@ -13,9 +13,11 @@ import com.bxtm.services.BookingService;
 import com.bxtm.services.ChodoService;
 import com.bxtm.services.NguoidungService;
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,17 +50,25 @@ public class ApiBookingController {
     @Autowired
     private NguoidungService nguoiDungService;
 
-    @GetMapping("/bookings")
+    @GetMapping("/secure/admin/bookings/")
     public ResponseEntity<List<Booking>> getBookings(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.bookingService.getBookings(params), HttpStatus.OK);
     }
 
-    @GetMapping("/bookings/{idBooking}")
+    @GetMapping("/secure/admin/bookings/{idBooking}/")
     public ResponseEntity<Booking> getBookingById(@PathVariable(value = "idBooking") int id) {
         return new ResponseEntity<>(this.bookingService.getBookingById(id), HttpStatus.OK);
     }
+    
+    @GetMapping("/secure/me/bookings/")
+    public ResponseEntity<List<Booking>> getBookingMe(Principal principal) {
+        Nguoidung nd = this.nguoiDungService.getNguoiDungByTaiKhoan(principal.getName());
+        Map<String, String> params = new HashMap<>();
+        params.put("idNguoiDung", String.valueOf(nd.getId()));
+        return new ResponseEntity<>(this.bookingService.getBookings(params), HttpStatus.OK);
+    }
 
-    @PostMapping("/bookings")
+    @PostMapping("/secure/bookings/")
     public ResponseEntity<Booking> create(@RequestParam Map<String, String> params) {
         Baido baiDo = this.baiDoService.getBaiDoById(Integer.parseInt(params.get("idBaiDo")));
         Chodo choDo = this.choDoService.getChoDoById(Integer.parseInt(params.get("idChoDo")));
@@ -68,18 +79,19 @@ public class ApiBookingController {
         newBooking.setIdNguoiDung(nguoiDung);
         newBooking.setThanhTien(BigDecimal.valueOf(Double.parseDouble(params.get("thanhTien"))));
         try {
+            Date now = new Date();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            newBooking.setThoiGianDat(formatter.parse(params.get("thoiGianDat")));
+            newBooking.setThoiGianDat(now);
             newBooking.setThoiGianBatDau(formatter.parse(params.get("thoiGianBatDau")));
             newBooking.setThoiGianKetThuc(formatter.parse(params.get("thoiGianKetThuc")));
         } catch (ParseException e) {
             // Xử lý lỗi
         }
-        newBooking.setTrangThai("Đang đặt");
+        newBooking.setTrangThai("dang_dat");
         return new ResponseEntity<>(this.bookingService.createOrUpdate(newBooking), HttpStatus.CREATED);
     }
 
-    @PostMapping("/bookings/update-status")
+    @PatchMapping("/secure/bookings/update-status/")
     public ResponseEntity<?> updateBookingStatus(@RequestParam Map<String, String> params) {
         try {
             int idBooking = Integer.parseInt(params.get("idBooking"));
@@ -98,7 +110,7 @@ public class ApiBookingController {
         }
     }
 
-    @GetMapping("/bookings/user/{idNguoiDung}")
+    @GetMapping("/secure/admin/bookings/booking/{idNguoiDung}/")
     public List<Booking> getBookingsByUserId(@PathVariable("idNguoiDung") int idNguoiDung) {
         return this.bookingService.getBookingByUserID(idNguoiDung);
     }

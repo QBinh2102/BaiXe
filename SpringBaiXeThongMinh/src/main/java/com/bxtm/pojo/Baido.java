@@ -87,9 +87,6 @@ public class Baido implements Serializable {
     @OneToMany(mappedBy = "idBaiDo")
     @JsonIgnore
     private Set<Danhgia> danhgiaSet;
-    @OneToMany(mappedBy = "idBaiDo")
-    @JsonIgnore
-    private Set<Baotri> baotriSet;
     @Transient
     @JsonIgnore
     private MultipartFile file;
@@ -196,14 +193,6 @@ public class Baido implements Serializable {
 
     public void setDanhgiaSet(Set<Danhgia> danhgiaSet) {
         this.danhgiaSet = danhgiaSet;
-    }
-
-    public Set<Baotri> getBaotriSet() {
-        return baotriSet;
-    }
-
-    public void setBaotriSet(Set<Baotri> baotriSet) {
-        this.baotriSet = baotriSet;
     }
 
     @Override

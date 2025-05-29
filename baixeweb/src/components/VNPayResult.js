@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, Form } from "react-router-dom";
+import Apis, { authApis } from "../configs/Apis";
 
 function VNPayResult() {
   const location = useLocation();
@@ -24,13 +25,15 @@ function VNPayResult() {
 
     const updateBookingStatus = async (status) => {
       try {
-        await fetch("http://localhost:8080/SpringBaiXeThongMinh/api/bookings/update-status", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            idBooking: bookingId,
-            trangThai: status
-          })
+        console.info(bookingId);
+        console.info(status);
+        const form = new FormData();
+        form.append("idBooking", bookingId);
+        form.append("trangThai", status);
+        await authApis().patch("http://localhost:8080/SpringBaiXeThongMinh/api/secure/bookings/update-status/", form, {
+          headers: {
+              'Content-Type': 'multipart/form-data'
+          }
         });
       } catch (err) {
         console.error("Lỗi cập nhật trạng thái booking:", err);
@@ -40,20 +43,18 @@ function VNPayResult() {
     const createInvoice = async () => {
       try {
         const idNguoiDungLocal = localStorage.getItem("idNguoiDung");
-        const idBookingLocal = localStorage.getItem("idBooking");
-
-        await fetch("http://localhost:8080/SpringBaiXeThongMinh/api/hoadons", {
-          method: "POST",
+        const res = await Apis.post("http://localhost:8080/SpringBaiXeThongMinh/api/hoadons/", {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            idBooking: { id: idBookingLocal },
-            idNguoiDung: { id: idNguoiDungLocal },
+            idBooking: bookingId,
+            idNguoiDung: idNguoiDungLocal,
             phuongThuc: "VNPAY",
             thoiGianThanhToan: new Date().toISOString(),
             trangThai: "thanh_cong",
             maGD: txnId
           })
         });
+        console.info(res.data);
       } catch (err) {
         console.error("Lỗi khi tạo hóa đơn:", err);
       }

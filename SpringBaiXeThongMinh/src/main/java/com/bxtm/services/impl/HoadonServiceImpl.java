@@ -30,5 +30,10 @@ public class HoadonServiceImpl implements HoadonService{
     public Hoadon createOrUpdate(Hoadon hoaDon) {
         return this.hoaDonRepo.createOrUpdate(hoaDon);
     }
+
+    @Override
+    public Hoadon getHoaDonById(int id) {
+        return this.hoaDonRepo.getHoaDonById(id);
+    }
     
 }

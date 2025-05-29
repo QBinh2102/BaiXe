@@ -116,9 +116,6 @@ public class Nguoidung implements Serializable {
     private Set<Booking> bookingSet;
     @OneToMany(mappedBy = "idNguoiDung")
     @JsonIgnore
-    private Set<Thongbao> thongbaoSet;
-    @OneToMany(mappedBy = "idNguoiDung")
-    @JsonIgnore
     private Set<Hoadon> hoadonSet;
     @OneToMany(mappedBy = "idNguoiDung")
     @JsonIgnore
@@ -269,14 +266,6 @@ public class Nguoidung implements Serializable {
 
     public void setBookingSet(Set<Booking> bookingSet) {
         this.bookingSet = bookingSet;
-    }
-
-    public Set<Thongbao> getThongbaoSet() {
-        return thongbaoSet;
-    }
-
-    public void setThongbaoSet(Set<Thongbao> thongbaoSet) {
-        this.thongbaoSet = thongbaoSet;
     }
 
     public Set<Hoadon> getHoadonSet() {

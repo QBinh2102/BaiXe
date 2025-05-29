@@ -56,11 +56,9 @@ public class Danhgia implements Serializable {
     private Date thoiGianDanhGia;
     @JoinColumn(name = "idBaiDo", referencedColumnName = "id")
     @ManyToOne
-    @JsonIgnore
     private Baido idBaiDo;
     @JoinColumn(name = "idNguoiDung", referencedColumnName = "id")
     @ManyToOne
-    @JsonIgnore
     private Nguoidung idNguoiDung;
 
     public Danhgia() {

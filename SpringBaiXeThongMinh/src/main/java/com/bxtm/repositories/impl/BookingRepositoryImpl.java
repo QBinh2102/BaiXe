@@ -73,7 +73,7 @@ public class BookingRepositoryImpl implements BookingRepository {
                 LocalDateTime endTime = LocalDateTime.parse(endTimeString, formatter);
 
                 Predicate timePredicate = cb.and(
-                        cb.equal(root.get("trangThai"), "Đang đặt"),
+                        cb.equal(root.get("trangThai"), "da_dat"),
                         cb.or(
                                 cb.between(root.get("thoiGianBatDau"), startTime, endTime),
                                 cb.between(root.get("thoiGianKetThuc"), startTime, endTime),

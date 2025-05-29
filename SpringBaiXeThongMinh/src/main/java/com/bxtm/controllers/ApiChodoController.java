@@ -16,8 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,20 +30,20 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class ApiChodoController {
 
     @Autowired
     private ChodoService choDoService;
 
-    @GetMapping("/baidos/{idBaiDo}/chodos")
+    @GetMapping("/baidos/{idBaiDo}/chodos/")
     public ResponseEntity<List<Chodo>> getChoDoByBaiDo(@PathVariable(value = "idBaiDo") int id) {
         Map<String, String> params = new HashMap<>();
         params.put("idBaiDo", String.valueOf(id));
         return new ResponseEntity<>(this.choDoService.getChoDo(params), HttpStatus.OK);
     }
 
-    @GetMapping("/baidos/{idBaiDo}/search")
-    @CrossOrigin
+    @GetMapping("/baidos/{idBaiDo}/search/")
     public ResponseEntity<List<Chodo>> getChoDo(@PathVariable(value = "idBaiDo") int id,
             @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
@@ -58,24 +58,14 @@ public class ApiChodoController {
         return new ResponseEntity<>(this.choDoService.getChoDoTrong(params, startTime, endTime), HttpStatus.OK);
     }
 
-    @GetMapping("/chodos")
-    @CrossOrigin
-    public ResponseEntity<List<Chodo>> getChoDosByBaiDo(@RequestParam("baiDoId") int baiDoId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("idBaiDo", String.valueOf(baiDoId));
-        List<Chodo> list = this.choDoService.getChoDo(params);
-        return new ResponseEntity<>(list, HttpStatus.OK);
-    }
-
-    @PutMapping("/chodos/update/{baiDoId}")
-    @CrossOrigin
+    @PatchMapping("/secure/admin/baidos/{baiDoId}/chodos/update/")
     public ResponseEntity<?> updateChodos(
             @PathVariable("baiDoId") int baiDoId,
             @RequestBody List<Chodo> chodos) {
 
         for (Chodo c : chodos) {
             Chodo existing = this.choDoService.getChoDoById(c.getId());
-            if (existing != null) {
+            if (existing != null && existing.getIdBaiDo().getId() == baiDoId) {
                 existing.setViTri(c.getViTri());
                 existing.setTrangThai(c.getTrangThai());
                 this.choDoService.createOrUpdate(existing);

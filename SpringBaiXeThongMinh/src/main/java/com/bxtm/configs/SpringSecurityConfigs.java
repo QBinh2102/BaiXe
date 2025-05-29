@@ -4,6 +4,7 @@
  */
 package com.bxtm.configs;
 
+import com.bxtm.filters.JwtFilter;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
@@ -64,14 +66,18 @@ public class SpringSecurityConfigs {
             .csrf(c -> c.disable())
             .authorizeHttpRequests(requests 
                 -> requests.requestMatchers("/", "/home", "/baidos/**").authenticated()
-                        .requestMatchers("/js/**").permitAll()
-                        .requestMatchers("/api/**").permitAll())
+                        .requestMatchers("/api/secure/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/secure/me/**").hasRole("USER")
+                        .requestMatchers("/api/secure/**").authenticated()
+                        .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/js/**").permitAll())
             .formLogin(form -> form.loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true").permitAll())
             .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
-        
+        http.addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

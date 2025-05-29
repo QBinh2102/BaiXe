@@ -19,26 +19,20 @@ import java.util.Date;
  * @author toquocbinh2102
  */
 public class JwtUtils {
-    // SECRET nên được lưu bằng biến môi trường,
-    private static final String SECRET = "12345678901234567890123456789012"; // 32 ký tự (AES key)
+    private static final String SECRET = "12345678901234567890123456789012"; // 32 ký tự
     private static final long EXPIRATION_MS = 86400000; // 1 ngày
 
-    public static String generateToken(String username) throws Exception {
+    public static String generateToken(String taiKhoan, String vaiTro) throws Exception {
         JWSSigner signer = new MACSigner(SECRET);
-
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(taiKhoan)
+                .claim("role", vaiTro)
                 .expirationTime(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .issueTime(new Date())
                 .build();
 
-        SignedJWT signedJWT = new SignedJWT(
-                new JWSHeader(JWSAlgorithm.HS256),
-                claimsSet
-        );
-
+        SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
         signedJWT.sign(signer);
-
         return signedJWT.serialize();
     }
 
@@ -53,5 +47,10 @@ public class JwtUtils {
             }
         }
         return null;
+    }
+    
+    public static String getRoleFromToken(String token) throws Exception {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        return signedJWT.getJWTClaimsSet().getStringClaim("role");
     }
 }

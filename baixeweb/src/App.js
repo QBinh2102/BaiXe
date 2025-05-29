@@ -19,6 +19,7 @@ import { Container } from "react-bootstrap";
 import { MyDispatchContext, MyUserContext } from "./configs/Contexts";
 import MyUserReducer from "./reducers/MyUserReducer";
 import { authApis, endpoints } from "./configs/Apis";
+import cookie from 'react-cookies';
 
 
 
@@ -28,8 +29,9 @@ const App = () => {
 
   useEffect(() => {
     const checkLogin = async () => {
-      const token = localStorage.getItem("token");
-      if (token !== null) {
+      const token = cookie.load("token"); // Dùng cookie thay vì localStorage
+
+      if (token !== undefined) {
         try {
           let res = await authApis().get(endpoints['current-user']);
           dispatch({
@@ -38,7 +40,7 @@ const App = () => {
           });
         } catch (err) {
           console.error("Lỗi kiểm tra đăng nhập:", err);
-          localStorage.removeItem("token"); 
+          cookie.remove("token"); // Xóa nếu token lỗi
         }
       }
     };

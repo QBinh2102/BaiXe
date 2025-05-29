@@ -4,32 +4,32 @@ import cookie from 'react-cookies';
 const BASE_URL = "http://localhost:8080/SpringBaiXeThongMinh/api";
 
 export const endpoints = {
-    'baidos': '/baidos',
-    'baido': (id) => `/baidos/${id}`,
-    'chodos': '/chodos',
-    'searchChoDo': (idBaiDo) => `/baidos/${idBaiDo}/search`,
-    'baotris': '/baotris',
-    'bookings': '/bookings',
-    'hoadons': '/hoadons',
-    'dangky': '/nguoidungs',
+    'baidos': '/baidos/',
+    'baido': (id) => `/baidos/${id}/`,
+    'chodos': '/chodos/',
+    'searchChoDo': (idBaiDo) => `/baidos/${idBaiDo}/search/`,
+    'baotris': '/baotris/',
+    'bookings': '/secure/bookings/',
+    'bookingNguoiDung': '/secure/me/bookings/',
+    'hoadons': '/hoadons/',
+    'dangky': '/nguoidungs/',
     'dangnhap': '/login',
     'current-user': '/secure/profile',
-    'capnhat': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhat`,
-    'capnhatanhxe': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatanhxe`,
-    'capnhatavatar': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatavatar`,
-    'capnhatkhonganh': (idNguoiDung) => `/nguoidungs/${idNguoiDung}/capnhatkhonganh`,
+    'capnhat': `/secure/me/nguoidungs/`,
     'thongtinnguoidung': (idNguoiDung) => `/nguoidungs/${idNguoiDung}`,
+    'danhgias': (idBaiDo) => `/secure/me/baidos/${idBaiDo}/danhgias/`,
+    'loadDanhGia': (idBaiDo) => `/baidos/${idBaiDo}/danhgias/`,
+    
 }
 
 export const authApis = () => {
   return axios.create({
     baseURL: BASE_URL,
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem("token")}`
+      'Authorization': `Bearer ${cookie.load('token')}`
     }
   });
 };
-
 
 export default axios.create ({
     baseURL: BASE_URL

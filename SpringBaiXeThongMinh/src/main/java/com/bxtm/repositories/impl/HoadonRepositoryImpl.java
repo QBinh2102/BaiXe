@@ -75,6 +75,14 @@ public class HoadonRepositoryImpl implements HoadonRepository {
 
         return query.getResultList();
     }
+    
+    @Override
+    public Hoadon getHoaDonById(int id){
+        Session s = this.factory.getObject().getCurrentSession();
+        Query query = s.createNamedQuery("Hoadon.findById", Hoadon.class);
+        query.setParameter("id", id);
+        return (Hoadon) query.getSingleResult();
+    }
 
     @Override
     public Hoadon createOrUpdate(Hoadon hoaDon) {
