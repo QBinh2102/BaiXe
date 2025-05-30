@@ -35,5 +35,9 @@ public class HoadonServiceImpl implements HoadonService{
     public Hoadon getHoaDonById(int id) {
         return this.hoaDonRepo.getHoaDonById(id);
     }
+    @Override
+    public Hoadon getHoaDonByBookingId(int idBooking) {
+        return this.hoaDonRepo.getHoaDonByBookingId(idBooking);
+    }
     
 }

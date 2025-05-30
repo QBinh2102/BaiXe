@@ -16,4 +16,5 @@ public interface HoadonRepository {
     List<Hoadon> getHoaDon(Map<String,String> params);
     Hoadon createOrUpdate(Hoadon hoaDon);
     Hoadon getHoaDonById(int id);
+    Hoadon getHoaDonByBookingId(int idBooking);
 }

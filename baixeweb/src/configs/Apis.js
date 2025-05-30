@@ -19,6 +19,7 @@ export const endpoints = {
     'thongtinnguoidung': (idNguoiDung) => `/nguoidungs/${idNguoiDung}`,
     'danhgias': (idBaiDo) => `/secure/me/baidos/${idBaiDo}/danhgias/`,
     'loadDanhGia': (idBaiDo) => `/baidos/${idBaiDo}/danhgias/`,
+    'hoadonByBookingId': (idBooking) => `/secure/me/hoadons/?idBooking=${idBooking}`,
     
 }
 

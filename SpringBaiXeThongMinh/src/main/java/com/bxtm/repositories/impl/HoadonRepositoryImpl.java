@@ -97,4 +97,17 @@ public class HoadonRepositoryImpl implements HoadonRepository {
 
         return hoaDon;
     }
+    
+     @Override
+    public Hoadon getHoaDonByBookingId(int idBooking) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Hoadon> cq = cb.createQuery(Hoadon.class);
+        Root<Hoadon> root = cq.from(Hoadon.class);
+        cq.select(root);
+        cq.where(cb.equal(root.get("idBooking").get("id"), idBooking));
+
+        return session.createQuery(cq).uniqueResult();
+    }
+    
 }

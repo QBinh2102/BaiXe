@@ -32,30 +32,68 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RequestMapping("/api")
 public class ApiHoadonController {
+
     @Autowired
     private HoadonService hoaDonService;
     @Autowired
     private NguoidungService nguoiDungService;
-    
+
     @GetMapping("/secure/admin/hoadons/")
-    public ResponseEntity<List<Hoadon>> getHoaDon(@RequestParam Map<String, String> params){
+    public ResponseEntity<List<Hoadon>> getHoaDon(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.hoaDonService.getHoaDon(params), HttpStatus.OK);
     }
+
     @PostMapping("/hoadons/")
     public ResponseEntity<Hoadon> createOrUpdate(@RequestBody Hoadon hoaDon) {
         return new ResponseEntity<>(this.hoaDonService.createOrUpdate(hoaDon), HttpStatus.CREATED);
     }
-    
+
     @GetMapping("/secure/admin/hoadons/{idHoaDon}/")
-    public ResponseEntity<Hoadon> getHoaDonById(@PathVariable( value = "idHoaDon") int id){
+    public ResponseEntity<Hoadon> getHoaDonById(@PathVariable(value = "idHoaDon") int id) {
         return new ResponseEntity<>(this.hoaDonService.getHoaDonById(id), HttpStatus.OK);
     }
 
     @GetMapping("/secure/me/hoadons/")
-    public ResponseEntity<List<Hoadon>> getHoaDonMe(Principal principal){
+    public ResponseEntity<List<Hoadon>> getHoaDonMe(Principal principal) {
         Nguoidung nguoiDung = this.nguoiDungService.getNguoiDungByTaiKhoan(principal.getName());
-        Map<String,String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         params.put("idNguoiDung", String.valueOf(nguoiDung.getId()));
         return new ResponseEntity<>(this.hoaDonService.getHoaDon(params), HttpStatus.OK);
     }
+
+    @GetMapping("/hoadons/booking/{idBooking}/")
+    public ResponseEntity<Hoadon> getHoaDonByBookingId(@PathVariable("idBooking") int idBooking) {
+        Hoadon hoaDon = this.hoaDonService.getHoaDonByBookingId(idBooking);
+        if (hoaDon != null) {
+            return new ResponseEntity<>(hoaDon, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/secure/me/hoadons/booking/{idBooking}/")
+    public ResponseEntity<Hoadon> getMyHoaDonByBookingId(
+            @PathVariable("idBooking") int idBooking,
+            Principal principal) {
+
+        // Lấy thông tin người dùng hiện tại
+        Nguoidung currentUser = this.nguoiDungService.getNguoiDungByTaiKhoan(principal.getName());
+        if (currentUser == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Lấy hóa đơn theo bookingId
+        Hoadon hoaDon = this.hoaDonService.getHoaDonByBookingId(idBooking);
+        if (hoaDon == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Kiểm tra xem hóa đơn này có thuộc về người dùng hiện tại không
+        if (hoaDon.getIdNguoiDung() != null && hoaDon.getIdNguoiDung().getId().equals(currentUser.getId())) {
+            return new ResponseEntity<>(hoaDon, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 }

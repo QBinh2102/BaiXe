@@ -20,6 +20,7 @@ import { MyDispatchContext, MyUserContext } from "./configs/Contexts";
 import MyUserReducer from "./reducers/MyUserReducer";
 import { authApis, endpoints } from "./configs/Apis";
 import cookie from 'react-cookies';
+// import Hoadondientu from "./components/Hoadondientu";
 
 
 
@@ -69,6 +70,7 @@ const App = () => {
               <Route path="/quanlygiaodich" element={<Quanlygiaodich />} />
               <Route path="/quanlynguoidung" element={<Quanlynguoidung />} />
               <Route path="/thongtin" element={<Chitietnguoidung/>}/>
+              {/* <Route path="/hoadondientu" element={<Hoadondientu/>}/> */}
                
             </Routes>
           </Container>
