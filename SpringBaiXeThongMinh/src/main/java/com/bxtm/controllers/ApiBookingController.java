@@ -109,6 +109,25 @@ public class ApiBookingController {
             return new ResponseEntity<>("Lỗi cập nhật trạng thái", HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @PatchMapping("/secure/bookings/{idBooking}/status/")
+    public ResponseEntity<?> updateBookingWithStatusById(@PathVariable(value = "idBooking") int idBooking,
+            @RequestParam Map<String, String> params) {
+        try {
+            String newStatus = params.get("trangThai");
+
+            Booking booking = this.bookingService.getBookingById(idBooking);
+            if (booking == null) {
+                return new ResponseEntity<>("Không tìm thấy booking", HttpStatus.NOT_FOUND);
+            }
+
+            booking.setTrangThai(newStatus);
+            this.bookingService.createOrUpdate(booking);
+            return new ResponseEntity<>("Cập nhật trạng thái thành công", HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("Lỗi cập nhật trạng thái", HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping("/secure/admin/bookings/booking/{idNguoiDung}/")
     public List<Booking> getBookingsByUserId(@PathVariable("idNguoiDung") int idNguoiDung) {

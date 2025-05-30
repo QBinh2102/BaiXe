@@ -73,15 +73,9 @@ Bạn có chắc chắn muốn tiếp tục?
   if (!confirmed) return;
 
   try {
-    const res = await fetch(
-      `http://localhost:8080/SpringBaiXeThongMinh/api/bookings/${idBooking}/status?trangThai=yeu_cau_hoan_tien`,
-      { method: "PATCH" }
+    const res = await authApis().patch(
+      `http://localhost:8080/SpringBaiXeThongMinh/api/secure/bookings/${idBooking}/status/?trangThai=yeu_cau_hoan_tien`
     );
-
-    if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(msg || "Lỗi khi gửi yêu cầu hoàn tiền.");
-    }
 
     alert("✅ Yêu cầu hoàn tiền đã được gửi.");
     setBookings(prev =>

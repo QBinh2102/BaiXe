@@ -59,7 +59,6 @@ const App = () => {
               <Route path="/" element={<Trangchu/>}/>
               <Route path="/dangnhap" element={<Dangnhap/>}/>
               <Route path="/dangky" element={<Dangky/>}/>
-              <Route path="/thongtin" element={<Dangky/>}/>
               <Route path="/baidos" element={<Baido/>}/>
               <Route path="/baidos/:idBaiDo" element={<ChiTietBaiDo/>}/>
               <Route path="/baidos/add" element={<Capnhatbaido/>} />
