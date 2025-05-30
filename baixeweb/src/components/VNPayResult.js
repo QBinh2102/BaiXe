@@ -8,11 +8,11 @@ function VNPayResult() {
   const [message, setMessage] = useState("");
   const [transactionId, setTransactionId] = useState("");
 
-  // useRef để đánh dấu đã xử lý
+
   const hasHandledRef = useRef(false);
 
   useEffect(() => {
-    if (hasHandledRef.current) return; // nếu đã xử lý thì bỏ qua
+    if (hasHandledRef.current) return; 
 
     hasHandledRef.current = true;
 
@@ -40,26 +40,50 @@ function VNPayResult() {
       }
     };
 
-    const createInvoice = async () => {
-      try {
-        const idNguoiDungLocal = localStorage.getItem("idNguoiDung");
-        const res = await Apis.post("http://localhost:8080/SpringBaiXeThongMinh/api/hoadons/", {
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            idBooking: bookingId,
-            idNguoiDung: idNguoiDungLocal,
-            phuongThuc: "VNPAY",
-            thoiGianThanhToan: new Date().toISOString(),
-            trangThai: "thanh_cong",
-            maGD: txnId
-          })
-        });
-        console.info(res.data);
-      } catch (err) {
-        console.error("Lỗi khi tạo hóa đơn:", err);
-      }
+ const createInvoice = async () => {
+  try {
+    const idNguoiDungLocal = localStorage.getItem("idNguoiDung");
+    
+    
+    const invoiceData = {
+      idBooking: bookingId,
+      idNguoiDung: idNguoiDungLocal,
+      phuongThuc: "VNPAY",
+      thoiGianThanhToan: new Date().toISOString(),
+      trangThai: "thanh_cong",
+      maGD: txnId,
+     
+      soTien: queryParams.get("vnp_Amount") ? parseInt(queryParams.get("vnp_Amount")) / 100 : null,
+      maBankCode: queryParams.get("vnp_BankCode"),
+      maCardType: queryParams.get("vnp_CardType"),
+      thoiGianGiaoDich: queryParams.get("vnp_PayDate")
     };
 
+   
+    const res = await Apis.post("http://localhost:8080/SpringBaiXeThongMinh/api/hoadons/", 
+      invoiceData,
+      {
+        headers: { 
+          "Content-Type": "application/json" 
+        }
+      }
+    );
+    
+    console.info("Hóa đơn được tạo thành công:", res.data);
+    return res.data;
+    
+  } catch (err) {
+    console.error("Lỗi khi tạo hóa đơn:", err);
+    
+   
+    if (err.response) {
+      console.error("Response error:", err.response.data);
+      console.error("Status:", err.response.status);
+    }
+    
+    throw err;
+  }
+};
     const handlePaymentResult = async () => {
       if (responseCode === "00") {
         setStatus("success");

@@ -69,7 +69,7 @@ const App = () => {
               <Route path="/lichsugiaodich" element={<Lichsugiaodich />} />
               <Route path="/quanlygiaodich" element={<Quanlygiaodich />} />
               <Route path="/quanlynguoidung" element={<Quanlynguoidung />} />
-               <Route path="/nguoidung/:id" element={<Chitietnguoidung />} />
+              <Route path="/thongtin" element={<Chitietnguoidung/>}/>
                
             </Routes>
           </Container>

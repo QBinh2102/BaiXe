@@ -10,7 +10,6 @@
     <main class="container">
         <form th:action="@{/baidos/}">
             <div class="mb-3 mt-3">
-
                 <input type="text" class="form-control" placeholder="Tên bãi đỗ..." name="tenBai">
             </div>
             <select class="form-select" name="diaChi">
@@ -22,10 +21,10 @@
             </select>
             <div class="row">
                 <div class="col-6 mb-3 mt-3">
-                    <input type="number" class="form-control" placeholder="Gía min..." name="fromPrice">
+                    <input type="number" class="form-control" placeholder="Giá min..." name="fromPrice">
                 </div>
                 <div class="col-6 mb-3 mt-3">
-                    <input type="number" class="form-control" placeholder="Gía max..." name="toPrice">
+                    <input type="number" class="form-control" placeholder="Giá max..." name="toPrice">
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">Tìm kiếm</button>
@@ -59,7 +58,6 @@
                     <td th:text="${bd.trangThai}"></td>
                     <td>
                         <!--                         /baidos/{idBaiDo}/choDo-->
-                        <a th:href="@{'/baidos/'+ ${bd.id} +'/choDo/'}" class="btn btn-info">Xem chi tiết</a>
                         <a th:href="@{'/baidos/' + ${bd.id}}" class="btn btn-primary">Sửa</a>
                     </td>
                 </tr>

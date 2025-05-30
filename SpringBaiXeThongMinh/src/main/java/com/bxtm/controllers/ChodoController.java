@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -35,16 +36,15 @@ public class ChodoController {
     @Autowired
     private ChodoService choDoService;
 
-    @GetMapping("/{idBaiDo}/choDo/")
-    public String detailBaiDo(Model model,
-            @PathVariable("idBaiDo") int id) {
-
-        Baido baiDo = this.baiDoService.getBaiDoById(id);
-        model.addAttribute("baido", baiDo);
-
-        return "chiTietBaiDo";
-    }
-
+//    @GetMapping("/{idBaiDo}/choDo/")
+//    public String detailBaiDo(Model model,
+//            @PathVariable("idBaiDo") int id) {
+//
+//        Baido baiDo = this.baiDoService.getBaiDoById(id);
+//        model.addAttribute("baido", baiDo);
+//
+//        return "chiTietBaiDo";
+//    }
     @PostMapping("/{idBaiDo}/choDo/search")
     public String search(Model model,
             @PathVariable("idBaiDo") int idBaiDo,
@@ -61,7 +61,7 @@ public class ChodoController {
         return "chiTietBaiDo";
     }
 
-    @GetMapping(("/admin/{idBaiDo}/choDo/"))
+    @GetMapping("/{idBaiDo}/choDos/")
     public String getChodosByBaiDo(@PathVariable("idBaiDo") int idBaiDo, Model model) {
         Baido baiDo = baiDoService.getBaiDoById(idBaiDo);
 
@@ -75,11 +75,12 @@ public class ChodoController {
         return "chodos";
     }
 
-    @PostMapping("/admin/{idBaiDo}/choDo/update")
+    @PostMapping("/{idBaiDo}/choDos/update")
     public String updateChodos(@PathVariable("idBaiDo") int idBaiDo,
             @RequestParam("ids") List<Integer> ids,
             @RequestParam("viTris") List<String> viTris,
-            @RequestParam("trangThais") List<String> trangThais) {
+            @RequestParam("trangThais") List<String> trangThais,
+            RedirectAttributes redirectAttrs) {
 
         for (int i = 0; i < ids.size(); i++) {
             Integer id = ids.get(i);
@@ -93,8 +94,8 @@ public class ChodoController {
                 choDoService.createOrUpdate(choDo);
             }
         }
-
-        return "redirect:/baidos/admin/" + idBaiDo + "/choDo/";
+        redirectAttrs.addFlashAttribute("successMessage", "Cập nhật chỗ đỗ thành công!");
+        return "redirect:/baidos/" + idBaiDo + "/choDos/";
     }
 
 }

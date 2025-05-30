@@ -45,7 +45,7 @@ const Baido = () => {
         try {
             setLoading(true);
 
-            let url = `${endpoints['baidos']}?page=${page}`;
+            let url = `${endpoints['baidos']}?page=${page}&trangThai=Hoạt động`;
 
             let tenBaiDo = q.get('tenBai');
             let diaChiBaiDo = q.get('diaChi');
