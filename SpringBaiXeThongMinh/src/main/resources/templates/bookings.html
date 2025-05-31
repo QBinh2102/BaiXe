@@ -71,9 +71,9 @@
                         <form th:case="'yeu_cau_hoan_tien'" th:action="@{/bookings/update/}" method="post" class="d-inline">
                             <input type="hidden" name="idBooking" th:value="${bk.id}" />
                             <input type="hidden" name="trangThai" value="da_hoan_tien" />
-                            <button type="submit" class="btn btn-success"
-                                    onclick="return confirm('Mã giao dịch: [[${bk.hoaDon.maGD}]]')"
-                                    th:inline="javascript">
+                            <button type="submit" class="btn btn-success" 
+                                    th:data-ma-gd="${bk.hoadonSet != null and !bk.hoadonSet.isEmpty() ? bk.hoadonSet.iterator().next().maGD : 'Không có'}"
+                                    onclick="return confirm('Mã giao dịch: ' + this.getAttribute('data-ma-gd'))">
                                 Hoàn tiền
                             </button>
                         </form>

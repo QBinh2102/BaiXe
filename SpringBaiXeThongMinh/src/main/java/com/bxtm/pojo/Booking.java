@@ -88,7 +88,7 @@ public class Booking implements Serializable {
     @ManyToOne
     @JsonIgnore
     private Nguoidung idNguoiDung;
-    @OneToMany(mappedBy = "idBooking")
+    @OneToMany(mappedBy = "idBooking", fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Hoadon> hoadonSet;
 
