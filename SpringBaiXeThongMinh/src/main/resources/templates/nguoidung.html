@@ -1,0 +1,90 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Bãi xe</title>
+    <th:block th:replace="base :: styles"></th:block>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+
+    <main class="container">
+
+        <h1 class="text-center text-info mt-1">QUẢN LÝ NGƯỜI DÙNG</h1>
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <p th:text="${error}"></p>
+        </div>
+
+        <form th:action="@{/nguoidungs/add}" th:object="${nguoidung}" method="post" enctype="multipart/form-data">
+            <div class="form-check mb-3" th:if="${nguoidung.id != null}">
+                <input class="form-check-input" type="checkbox" th:field="*{active}" id="activeCheckbox" />
+                <label class="form-check-label" for="activeCheckbox">
+                    Active
+                </label>
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="text" class="form-control" th:field="*{hoTen}" placeholder="Họ tên" required />
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="text" class="form-control" th:field="*{taiKhoan}" placeholder="Tài khoản" required />
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="password" class="form-control" th:field="*{matKhau}" placeholder="Mật khẩu" th:attr="required=${nguoidung.id == null}" />
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="email" class="form-control" th:field="*{email}" placeholder="Email" required />
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="tel" class="form-control"
+                       th:field="*{sdt}"
+                       placeholder="Số điện thoại"
+                       pattern="[0-9]{10,11}"
+                       maxlength="11"
+                       inputmode="numeric"
+                       required />
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="number" min="0" class="form-control" th:field="*{cccd}" placeholder="Căn cước công dân" required />
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="text" class="form-control" th:field="*{hieuXe}" placeholder="Hiệu xe" required />
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="text" class="form-control" th:field="*{bienSo}" placeholder="Biển số" required />
+            </div>
+            <div class="mb-3 mt-3">
+                <input type="text" class="form-control" th:field="*{mauXe}" placeholder="Màu xe" required />
+            </div>
+
+            <div class="mb-3 mt-3">
+                <select class="form-select" th:field="*{vaiTro}">
+                    <option value="ROLE_ADMIN" 
+                            th:selected="${nguoidung.vaiTro == 'ROLE_ADMIN'}">Admin</option>
+                    <option value="ROLE_USER" 
+                            th:selected="${nguoidung.vaiTro == 'ROLE_USER'}">USER</option>
+                </select>
+            </div>
+
+            <div class="mb-3 mt-3" th:if="${nguoidung.id != null and nguoidung.anhXe != null}">
+                <img th:src="@{${nguoidung.anhXe}}" alt="Ảnh xe" class="img-fluid rounded" style="max-height: 200px;" />
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="fileAnhXe" class="form-label">Ảnh xe</label>
+                <input type="file" id="fileAnhXe" class="form-control" th:field="*{fileAnhXe}" />
+            </div>
+
+            <div class="mb-3 mt-3" th:if="${nguoidung.id != null and nguoidung.avatar != null}">
+                <img th:src="@{${nguoidung.avatar}}" alt="Avatar" class="img-fluid rounded" style="max-height: 200px;" />
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="file" class="form-label">Avatar</label>
+                <input type="file" id="file" class="form-control" th:field="*{file}" />
+            </div>
+
+            <input type="hidden" th:field="*{id}" />
+            <button type="submit" class="btn btn-primary" th:if="${nguoidung.id == null}">Thêm người dùng</button>
+            <button type="submit" class="btn btn-primary" th:unless="${nguoidung.id == null}">Cập nhật người dùng</button>
+        </form>
+    </main>
+    <div th:replace="base :: footer"></div>
+</body>
+</html>

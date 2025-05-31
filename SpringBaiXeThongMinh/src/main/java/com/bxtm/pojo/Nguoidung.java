@@ -128,6 +128,7 @@ public class Nguoidung implements Serializable {
     private MultipartFile fileAnhXe;
 
     public Nguoidung() {
+        this.active = true;
     }
 
     public Nguoidung(Integer id) {
@@ -336,5 +337,5 @@ public class Nguoidung implements Serializable {
     public void setFileAnhXe(MultipartFile fileAnhXe) {
         this.fileAnhXe = fileAnhXe;
     }
-    
+
 }

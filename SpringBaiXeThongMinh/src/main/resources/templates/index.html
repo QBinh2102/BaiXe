@@ -1,12 +1,67 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Trang chủ</title>
-        <th:block th:replace="base :: styles"></th:block>
-    </head>
-    <body>
-        <div th:replace="base :: header"></div>
-        <h2 th:text="${msg}"></h2>
-        <div th:replace="base :: footer"></div>
-    </body>
+        <title>Bãi xe</title>
+    <th:block th:replace="base :: styles"></th:block>
+    <style>
+        .feature-card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            transition: 0.3s;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+    <div class="container py-4">
+        <h1 class="text-center fw-bold mb-4">Trang chủ</h1>
+
+        <div class="alert alert-info text-center">
+            Hệ thống <strong>bãi gửi xe thông minh</strong> giúp quản lý xe ra/vào, tính tiền tự động, hỗ trợ đăng nhập và đăng ký dễ dàng cho người dùng và nhân viên.
+        </div>
+
+        <h4 class="fw-bold mt-5 mb-3">Tính năng nổi bật</h4>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="emoji">🚗</span>
+                        <strong>Quản lý xe ra/vào</strong>
+                    </div>
+                    <p>Kiểm soát xe vào, xe ra theo thời gian thực và tự động tính phí.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="emoji">📊</span>
+                        <strong>Thống kê doanh thu</strong>
+                    </div>
+                    <p>Theo dõi thu nhập theo ngày, tháng hoặc thời gian tùy chọn.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="emoji">🧑‍💼</span>
+                        <strong>Quản lý người dùng</strong>
+                    </div>
+                    <p>Hỗ trợ đăng ký, đăng nhập và phân quyền cho nhân viên.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="base :: footer"></div>
+</body>
 </html>

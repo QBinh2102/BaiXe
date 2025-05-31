@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <head>
-        <title>Trang chủ</title>
+        <title>Bãi xe</title>
     <th:block th:fragment="styles">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
@@ -27,6 +27,9 @@
                         <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                             <a class="nav-link" th:href="@{/nguoidungs/}" th:text="${nguoiDung}"></a>
                         </li>
+                        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                            <a class="nav-link" th:href="@{/bookings/}" th:text="${booking}"></a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-danger" th:href="@{/logout}" sec:authorize="isAuthenticated()">Đăng xuất</a>
                         </li>
@@ -37,9 +40,8 @@
     </header>
 
     <footer th:fragment="footer">
-        <div class="mt-4 p-5 bg-primary text-white rounded">
-            <h1>Jumbotron Example</h1>
-            <p>Lorem ipsum...</p>
+        <div class="mt-3 mb-3 p-3 bg-info text-dark rounded-0">
+            Bãi gửi xe thông minh © 2025. Liên hệ: 0123 456 789 | Email: support@baixe.vn
         </div>
     </footer>
 </body>

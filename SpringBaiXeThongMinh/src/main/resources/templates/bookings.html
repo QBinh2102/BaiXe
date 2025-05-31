@@ -1,0 +1,90 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Bãi xe</title>
+    <th:block th:replace="base :: styles"></th:block>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+
+    <main class="container">
+        <h1 class="text-center text-info mt-1">QUẢN Lý BOOKING</h1>
+        <form th:action="@{/bookings/}">
+            <div class="mb-3 mt-3">
+                <input type="text" class="form-control" name="tenNguoiDung"
+                       placeholder="Tên người dùng" th:value="${param.tenNguoiDung}">
+            </div>
+
+            <div class="mb-3 mt-3">
+                <input type="text" class="form-control" name="tenBaiDo"
+                       placeholder="Tên bãi đỗ" th:value="${param.tenBaiDo}">
+            </div>
+
+            <div class="mb-3 mt-3 col-auto">
+                <select class="form-select" name="trangThai">
+                    <option value="">-- Trạng thái --</option>
+                    <option value="da_dat" th:selected="${param.trangThai == 'da_dat'}">Đã đặt</option>
+                    <option value="da_huy" th:selected="${param.trangThai == 'da_huy'}">Đã hủy</option>
+                    <option value="yeu_cau_hoan_tien" th:selected="${param.trangThai == 'yeu_cau_hoan_tien'}">Yêu cầu hoàn tiền</option>
+                    <option value="da_hoan_tien" th:selected="${param.trangThai == 'da_hoan_tien'}">Đã hoàn tiền</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </form>
+        <hr />
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Họ tên</th>
+                    <th>Bãi đỗ</th>
+                    <th>Thành tiền</th>
+                    <th>Thời gian đặt</th>
+                    <th>Thời gian bắt đầu</th>
+                    <th>Thời gian kết thúc</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="bk : ${bookings}">
+                    <td th:text="${bk.idNguoiDung.hoTen}"></td>
+                    <td th:text="${bk.idBaiDo.ten}"></td>
+                    <td th:if="${bk.thanhTien != null}" th:text="${#numbers.formatInteger(bk.thanhTien, 3, 'POINT') + ' VNĐ'}"></td>
+                    <td th:text="${bk.thoiGianDat}"></td>
+                    <td th:text="${bk.thoiGianBatDau}"></td>
+                    <td th:text="${bk.thoiGianKetThuc}"></td>
+                    <td th:switch="${bk.trangThai}">
+                        <span th:case="'dang_dat'">Đang đặt</span>
+                        <span th:case="'da_dat'">Đã đặt</span>
+                        <span th:case="'da_huy'">Đã hủy</span>
+                        <span th:case="'yeu_cau_hoan_tien'">Yêu cầu hoàn tiền</span>
+                        <span th:case="'da_hoan_tien'">Đã hoàn tiền</span>
+                        <span th:case="*">Không xác định</span>
+                    </td>
+                    <td th:switch="${bk.trangThai}">
+                        <form th:case="'dang_dat'" th:action="@{/bookings/update/}" method="post" class="d-inline">
+                            <input type="hidden" name="idBooking" th:value="${bk.id}" />
+                            <input type="hidden" name="trangThai" value="da_huy" />
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy không?')">Hủy chỗ</button>
+                        </form>
+                        <form th:case="'yeu_cau_hoan_tien'" th:action="@{/bookings/update/}" method="post" class="d-inline">
+                            <input type="hidden" name="idBooking" th:value="${bk.id}" />
+                            <input type="hidden" name="trangThai" value="da_hoan_tien" />
+                            <button type="submit" class="btn btn-success"
+                                    onclick="return confirm('Mã giao dịch: [[${bk.hoaDon.maGD}]]')"
+                                    th:inline="javascript">
+                                Hoàn tiền
+                            </button>
+                        </form>
+                        <span th:case="*"></span>
+                    </td>
+
+                </tr>
+            </tbody>
+
+        </table>
+    </main>
+
+</body>
+</html>

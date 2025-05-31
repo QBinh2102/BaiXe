@@ -54,6 +54,16 @@ public class BookingRepositoryImpl implements BookingRepository {
             if (nguoiDung_id != null && !nguoiDung_id.isEmpty()) {
                 predicates.add(cb.equal(root.get("idNguoiDung").get("id").as(String.class), nguoiDung_id));
             }
+            
+            String tenBaiDo = params.get("tenBaiDo");
+            if (tenBaiDo != null && !tenBaiDo.isEmpty()) {
+                predicates.add(cb.like(root.get("idBaiDo").get("ten").as(String.class), String.format("%%%s%%", tenBaiDo)));
+            }
+
+            String tenNguoiDung = params.get("tenNguoiDung");
+            if (tenNguoiDung != null && !tenNguoiDung.isEmpty()) {
+                predicates.add(cb.like(root.get("idNguoiDung").get("hoTen").as(String.class), String.format("%%%s%%", tenNguoiDung)));
+            }
 
             String choDoXe_id = params.get("idChoDo");
             if (choDoXe_id != null && !choDoXe_id.isEmpty()) {
@@ -73,7 +83,10 @@ public class BookingRepositoryImpl implements BookingRepository {
                 LocalDateTime endTime = LocalDateTime.parse(endTimeString, formatter);
 
                 Predicate timePredicate = cb.and(
-                        cb.equal(root.get("trangThai"), "da_dat"),
+                        cb.or(
+                                cb.equal(root.get("trangThai"), "da_dat"),
+                                cb.equal(root.get("trangThai"), "dang_dat")
+                        ),
                         cb.or(
                                 cb.between(root.get("thoiGianBatDau"), startTime, endTime),
                                 cb.between(root.get("thoiGianKetThuc"), startTime, endTime),
@@ -88,6 +101,7 @@ public class BookingRepositoryImpl implements BookingRepository {
 
             q.where(predicates.toArray(Predicate[]::new));
         }
+        q.orderBy(cb.desc(root.get("id")));
         Query query = s.createQuery(q);
 
         return query.getResultList();

@@ -65,13 +65,14 @@ public class SpringSecurityConfigs {
             .cors(withDefaults())
             .csrf(c -> c.disable())
             .authorizeHttpRequests(requests 
-                -> requests.requestMatchers("/", "/home", "/baidos/**").authenticated()
+                -> requests
                         .requestMatchers("/api/secure/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/secure/me/**").hasRole("USER")
                         .requestMatchers("/api/secure/**").authenticated()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/js/**").permitAll())
+                        .requestMatchers("/js/**").permitAll()
+                        .requestMatchers("/**", "/home").authenticated())
             .formLogin(form -> form.loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)

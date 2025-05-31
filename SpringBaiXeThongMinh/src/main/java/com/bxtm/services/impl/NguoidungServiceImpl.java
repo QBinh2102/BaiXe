@@ -9,6 +9,7 @@ import com.bxtm.repositories.NguoidungRepository;
 import com.bxtm.services.NguoidungService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import jakarta.persistence.NoResultException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("userDetailService")
 @Transactional
-public class NguoidungServiceImpl implements NguoidungService{
+public class NguoidungServiceImpl implements NguoidungService {
+
     @Autowired
     private NguoidungRepository nguoiDungRepo;
     @Autowired
@@ -43,7 +45,7 @@ public class NguoidungServiceImpl implements NguoidungService{
     public List<Nguoidung> getNguoiDung(Map<String, String> params) {
         return this.nguoiDungRepo.getNguoiDung(params);
     }
-    
+
     @Override
     public Nguoidung getNguoiDungById(int idNguoiDung) {
         return this.nguoiDungRepo.getNguoiDungById(idNguoiDung);
@@ -53,25 +55,26 @@ public class NguoidungServiceImpl implements NguoidungService{
     public Nguoidung getNguoiDungByTaiKhoan(String taiKhoan) {
         return this.nguoiDungRepo.getNguoiDungByTaiKhoan(taiKhoan);
     }
-    
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Nguoidung nd = this.nguoiDungRepo.getNguoiDungByTaiKhoan(username);
-        if(nd == null){
+        if (nd == null) {
             throw new UsernameNotFoundException("Invalid username!");
         }
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority(nd.getVaiTro()));
-        
+
         return new org.springframework.security.core.userdetails.User(
                 nd.getTaiKhoan(), nd.getMatKhau(), authorities);
     }
-    
+
     @Override
     public Nguoidung createOrUpdate(Nguoidung nguoiDung) {
-        if(nguoiDung.getId()==null)
+        if (nguoiDung.getId() == null) {
             nguoiDung.setMatKhau(this.passwordEncoder.encode(nguoiDung.getMatKhau()));
-        if(nguoiDung.getFile() != null && !nguoiDung.getFile().isEmpty()){
+        }
+        if (nguoiDung.getFile() != null && !nguoiDung.getFile().isEmpty()) {
             try {
                 Map res = cloudinary.uploader().upload(nguoiDung.getFile().getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));
@@ -80,7 +83,7 @@ public class NguoidungServiceImpl implements NguoidungService{
                 Logger.getLogger(NguoidungServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        if(nguoiDung.getFileAnhXe() != null && !nguoiDung.getFileAnhXe().isEmpty()){
+        if (nguoiDung.getFileAnhXe() != null && !nguoiDung.getFileAnhXe().isEmpty()) {
             try {
                 Map res = cloudinary.uploader().upload(nguoiDung.getFileAnhXe().getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));

@@ -23,12 +23,11 @@ public class IndexController {
         model.addAttribute("trangChu","Trang chủ");
         model.addAttribute("baiDo","Bãi đỗ");
         model.addAttribute("nguoiDung","Người dùng");
+        model.addAttribute("booking","Booking");
     } 
     
     @RequestMapping("/")
     public String index(Model model){
-        
-        model.addAttribute("msg", "Chào mừng đến với bãi đỗ xe thông minh");
         return "index";
     }
 }

@@ -1,7 +1,7 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Bãi đỗ</title>
+        <title>Bãi xe</title>
     <th:block th:replace="base :: styles"></th:block>
 </head>
 <body>
@@ -9,7 +9,7 @@
 
     <main class="container">
 
-        <h1 class="text-center text-info mt-1">QUẢN TRỊ BÃI ĐỖ</h1>
+        <h1 class="text-center text-info mt-1">QUẢN Lý BÃI ĐỖ</h1>
 
         <form th:action="@{/baidos/add}" th:object="${baido}" method="post" enctype="multipart/form-data">
             <div class="mb-3 mt-3">
@@ -35,6 +35,10 @@
                             th:selected="${baido.trangThai == 'Bảo trì'}">Bảo trì</option>
                 </select>
             </div>
+            <div class="mb-3 mt-3" th:if="${baido.id != null and baido.anhBai != null}">
+                <img th:src="@{${baido.anhBai}}" alt="Ảnh bãi đỗ" class="img-fluid rounded" style="max-height: 200px;" />
+            </div>
+
             <div class="mb-3 mt-3">
                 <input type="file" class="form-control" th:field="*{file}" />
             </div>
@@ -42,8 +46,8 @@
             <input type="hidden" th:field="*{id}" />
             <button type="submit" class="btn btn-primary" th:if="${baido.id == null}">Thêm bãi đỗ</button>
             <button type="submit" class="btn btn-primary" th:unless="${baido.id == null}">Cập nhật bãi đỗ</button>
-             <a th:href="@{/baidos/{id}/choDos/(id=${baido.id})}" class="btn btn-info" 
-      
+            <a th:href="@{/baidos/{id}/choDos/(id=${baido.id})}" class="btn btn-info" 
+
                th:if="${baido.id != null}">
                 Sửa chỗ đỗ
             </a>

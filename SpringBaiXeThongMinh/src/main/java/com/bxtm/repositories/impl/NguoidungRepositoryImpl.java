@@ -44,6 +44,16 @@ public class NguoidungRepositoryImpl implements NguoidungRepository {
 
         if (params != null) {
             List<Predicate> predicates = new ArrayList<>();
+            
+            String hoTen = params.get("hoTen");
+            if (hoTen != null && !hoTen.isEmpty()) {
+                predicates.add(cb.like(root.get("hoTen"), String.format("%%%s%%", hoTen)));
+            }
+            
+            String taiKhoan = params.get("taiKhoan");
+            if (taiKhoan != null && !taiKhoan.isEmpty()) {
+                predicates.add(cb.like(root.get("taiKhoan"), String.format("%%%s%%", taiKhoan)));
+            }
 
             String email = params.get("email");
             if (email != null && !email.isEmpty()) {
@@ -68,6 +78,11 @@ public class NguoidungRepositoryImpl implements NguoidungRepository {
             String active = params.get("active");
             if (active != null && !active.isEmpty()) {
                 predicates.add(cb.equal(root.get("active"), active));
+            }
+            
+            String vaiTro = params.get("vaiTro");
+            if (vaiTro != null && !vaiTro.isEmpty()) {
+                predicates.add(cb.equal(root.get("vaiTro"), vaiTro));
             }
 
             q.where(predicates.toArray(Predicate[]::new));
